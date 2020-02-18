@@ -175,14 +175,14 @@ class SQRP(object):
         return self.__relative_weights.get("college_enrollment_rate", 3)
 
     @property
-    def college_persistent_rate(self):
+    def college_persistence_rate(self):
         '''
         The relative weight for indicator 15 of 17: the percentage of students
         enrolled in a two- or four-year college in the fall or spring after
         graduation from high school that remain enrolled in college the
         following fall. Defaults to 3.
         '''
-        return self.__relative_weights.get("college_persistent_rate", 3)
+        return self.__relative_weights.get("college_persistence_rate", 3)
 
     @property
     def five_essentials_survey(self):
