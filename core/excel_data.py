@@ -21,6 +21,8 @@ def load_data(filename, sheet_name):
     '''
     df = pd.read_excel(filename, sheet_name, header=[1, 2])
     df.columns = [": ".join(col).strip() for col in df.columns.values]
+    if sheet_name == 3: # drop elementary school survey col in combo sheet to avoid future confusion
+        df.drop(df.columns[74], axis=1, inplace=True)
     return df
 
 def initial_clean(hs_data):
