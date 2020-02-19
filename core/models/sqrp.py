@@ -205,3 +205,19 @@ class SQRP(object):
         quality indicators that are correct in CPS data systems. Defaults to 3.
         '''
         return self.__relative_weights.get("data_quality_index_score", 3)
+
+    def calculate_base_weight(self):
+        '''
+        Use the relative weights of all indicators to calculate the numerical
+        weight corresponding to a relative weight of 1. Defaults to 1/60, the
+        base weight for the default relative weights.
+
+        Returns: float, with a value 0 - 1
+        '''
+        if not self.__relative_weights: #if using default weights
+            return 1/60
+
+        total = 0
+        for weight in self.__relative_weights.values():
+            total += weight
+        return 1 / total
