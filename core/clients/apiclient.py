@@ -5,18 +5,21 @@ import sqlite3
 import pandas as pd
 
 #url1 = "https://data.cityofchicago.org/resource/kh4r-387c.csv"
+def set_up_db():
+    put_df_in_database(get_enrollment_data(), 'enrollment')
+    put_df_in_database(get_location_data(), 'location')
 
-def put_df_in_database():
-    df = get_enrollment_data()
+def put_df_in_database(data_gen_func, table_name):
+    df = data_gen_func
     con = sqlite3.connect("../../db.sqlite3")
     u = con.cursor()
-    df.to_sql('enrollment', con=con, index=False, if_exists='append')
+    df.to_sql(table_name, con=con, index=False, if_exists='append')
 
-def put_loc_in_database():
-    df = get_location_data()
-    con = sqlite3.connect("../../db.sqlite3")
-    u = con.cursor()
-    df.to_sql('location', con=con, index=False, if_exists='append')
+#def put_loc_in_database():
+    #df = get_location_data()
+    #con = sqlite3.connect("../../db.sqlite3")
+    #u = con.cursor()
+    #df.to_sql('location', con=con, index=False, if_exists='append')
 #def generate_enrollment_csv():
     #with open('enrollment.csv', 'w') as writer:
         #writer.write(enrollment.text)
@@ -67,7 +70,7 @@ def gen_enrollment_query():
 
     return query
 
-def gen_progress_data_query():
+#def gen_progress_data_query():
     '''
     Generates a query to select info from School Progress Reports API
     '''
