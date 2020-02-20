@@ -1,10 +1,25 @@
 import pandas as pd
 import xlrd
 import re
+import sqlite3
 
 filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 
 #column_names = {"Unnamed: 1": df["Unnamed: 1"][0]}
+
+def import_to_database():
+    df = make_final_df()
+    con = sqlite3.connect("../../db.sqlite3")
+    u = con.cursor()
+    df.to_sql('sqrp_excel', con=con, index=False, if_exists='append')
+    return None
+
+
+def make_final_df():
+    hs_data = load_and_clean_file(2)
+    combo_school_data = load_and_clean_file(3)
+    final_df = pd.concat([hs_data, combo_school_data], axis=0)
+    return final_df
 
 def load_and_clean_file(sheet_name):
     filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
@@ -12,7 +27,6 @@ def load_and_clean_file(sheet_name):
     pared_df = pare_df(hs_data)
     #rename_cols(pared_df)
     return rename_cols(pared_df)
-
 
 
 def load_data(filename, sheet_name): 
@@ -27,9 +41,6 @@ def load_data(filename, sheet_name):
 
 def initial_clean(hs_data):
     #hs_data = load_data(filename, sheet_name)
-    #cols_to_keep = ["School ID: Unnamed: 0_level_1", 
-                    #"School Name: Unnamed: 1_level_1",
-                    #"SY 2018-2019 SQRP Rating: Unnamed: 4_level_1"]
     cols_to_keep = []
     for col in hs_data.columns:
         #if re.search(r': Score', col):
@@ -49,7 +60,6 @@ def initial_clean(hs_data):
         col_clean = re.sub(r": Unnamed: \w+", "", col_clean)
         col_clean = re.sub(r": Points", "", col_clean)
         #re.sub(r'\s+', " ", col)
-        #if col not in clean_names:
         clean_names[col] = col_clean
     return clean_names
 
@@ -103,26 +113,6 @@ def rename_cols(pared_df):
 
 
     return final_df
-
-
-    
-
-
-
-def clean_combo_data(combo_data):
-    return None
-
-def load_combo_data(filename):
-
-    df = pd.read_excel(filename, sheet_name=3, header=[1, 2])
-
-
-
-def gen_col_name_dict(df):
-    col_names = {}
-    for col in df.columns:
-        col_names[col] = df[col][0]
-    return col_names
 
 
 
