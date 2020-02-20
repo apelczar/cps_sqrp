@@ -1,7 +1,38 @@
+#-------------------------------------------------------------------------------
+# SQRP.py
+# 
+# Stores relative weights for each of the SQRP indicators
+#-------------------------------------------------------------------------------
+'''
+The relative weights associated with the 2018-19 CPS indicators
+'''
+DEFAULT_RELATIVE_WEIGHTS = {
+    "grade_11_sat_3yr_cohort_growth": 6,
+    "priority_group_sat_growth": 6,
+    "grade_11_sat_growth_ebrw": 1,
+    "grade_11_sat_growth_math": 1,
+    "grade_10_psat_annual_growth_ebrw": 1,
+    "grade_10_psat_annual_growth_math": 1,
+    "grade_9_psat_cohort_growth": 2,
+    "percent_students_college_ready": 6,
+    "avg_daily_attendance_rate": 6,
+    "freshmen_on_track_rate": 6,
+    "four_year_cohort_graduation_rate": 6,
+    "one_year_dropout_rate": 3,
+    "percent_graduating_with_creds": 3,
+    "college_enrollment_rate": 3,
+    "college_persistence_rate": 3,
+    "five_essentials_survey": 3,
+    "data_quality_index_score": 3
+}
+
+'''
+A School Quality Rating Policy (SQRP) model
+'''
 class SQRP(object):
     def __init__(self, relative_weights={}):
         '''
-        Instantiates a new School Quality Rating Policy (SQRP) model.
+        The class constructor
 
         Inputs:
             relative_weights (dict<string, int>): a dictionary with indicator
@@ -12,7 +43,10 @@ class SQRP(object):
         Outputs:
             (SQRP): the model
         '''
-        self.__relative_weights = relative_weights
+        if relative_weights:
+            self.__relative_weights = relative_weights
+        else:
+            self.__relative_weights = DEFAULT_RELATIVE_WEIGHTS
 
     @property
     def grade_11_sat_3yr_cohort_growth(self):
@@ -20,7 +54,7 @@ class SQRP(object):
         The relative weight for indicator 1 of 17: the overall SAT growth rate
         for a school. Defaults to 6.
         '''
-        return self.__relative_weights.get("grade_11_sat_3yr_cohort_growth", 6)
+        return self.__relative_weights.get("grade_11_sat_3yr_cohort_growth")
 
     @property
     def priority_group_sat_growth(self):
@@ -33,7 +67,7 @@ class SQRP(object):
         students in the priority group, the indicator is not
         used and the weight is reallocated to the SAT Cohort growth indicator.
         '''
-        return self.__relative_weights.get("priority_group_sat_growth", 6)
+        return self.__relative_weights.get("priority_group_sat_growth")
 
     @property
     def grade_11_sat_growth_ebrw(self):
@@ -48,7 +82,7 @@ class SQRP(object):
         school is assigned a percentile representing where it would fall on the
         national distribution. 
         '''
-        return self.__relative_weights.get("grade_11_sat_growth_ebrw", 1)
+        return self.__relative_weights.get("grade_11_sat_growth_ebrw")
 
     @property
     def grade_11_sat_growth_math(self):
@@ -62,7 +96,7 @@ class SQRP(object):
         school is assigned a percentile representing where it would fall on the
         national distribution. 
         '''
-        return self.__relative_weights.get("grade_11_sat_growth_math", 1)
+        return self.__relative_weights.get("grade_11_sat_growth_math")
 
     @property
     def grade_10_psat_annual_growth_ebrw(self):
@@ -77,7 +111,7 @@ class SQRP(object):
         school is assigned a percentile representing where it would fall on the
         national distribution. 
         '''
-        return self.__relative_weights.get("grade_10_psat_annual_growth_ebrw", 1)
+        return self.__relative_weights.get("grade_10_psat_annual_growth_ebrw")
 
     @property
     def grade_10_psat_annual_growth_math(self):
@@ -91,18 +125,18 @@ class SQRP(object):
         school is assigned a percentile representing where it would fall on the
         national distribution. 
         '''
-        return self.__relative_weights.get("grade_10_psat_annual_growth_math", 1)
+        return self.__relative_weights.get("grade_10_psat_annual_growth_math")
 
     @property
     def grade_9_psat_cohort_growth(self):
         '''
         The relative weight for indicator 7 of 17: the one-year PSAT growth rate
-        for the cohort of current 9th graders. Defaults to 6.
+        for the cohort of current 9th graders. Defaults to 2.
         
         The growth rate is calculated from the spring PSAT composite scale score
         minus the average expected PSAT Composite scale score for 9th grade.
         '''
-        return self.__relative_weights.get("grade_9_psat_cohort_growth", 2)
+        return self.__relative_weights.get("grade_9_psat_cohort_growth")
 
     @property
     def percent_students_college_ready(self):
@@ -111,7 +145,7 @@ class SQRP(object):
         the 9th, 10th, and 11th grades meeting or exceeding combined College
         Readiness Benchmarks established by the College Board. Defaults to 6.
         '''
-        return self.__relative_weights.get("percent_students_college_ready", 6)
+        return self.__relative_weights.get("percent_students_college_ready")
 
     @property
     def avg_daily_attendance_rate(self):
@@ -124,7 +158,7 @@ class SQRP(object):
         transportation adjustments, and each school’s two lowest attendance days
         only if the adjustment would improve the school's rate.
         '''
-        return self.__relative_weights.get("avg_daily_attendance_rate", 6)
+        return self.__relative_weights.get("avg_daily_attendance_rate")
 
     @property
     def freshmen_on_track_rate(self):
@@ -133,7 +167,7 @@ class SQRP(object):
         earning five or more credits and failing no more than 0.5 courses in a
         core subject during their 9th grade year. Defaults to 6.
         '''
-        return self.__relative_weights.get("freshmen_on_track_rate", 6)
+        return self.__relative_weights.get("freshmen_on_track_rate")
 
     @property
     def four_year_cohort_graduation_rate(self):
@@ -142,7 +176,7 @@ class SQRP(object):
         who were first-time freshmen four years prior who have graduated.
         Defaults to 6.
         '''
-        return self.__relative_weights.get("four_year_cohort_graduation_rate", 6)
+        return self.__relative_weights.get("four_year_cohort_graduation_rate")
 
     @property
     def one_year_dropout_rate(self):
@@ -150,7 +184,7 @@ class SQRP(object):
         The relative weight for indicator 12 of 17: the percentage of students
         in grades 9-12 dropping out during the year. Defaults to 3.
         '''
-        return self.__relative_weights.get("one_year_dropout_rate", 3)
+        return self.__relative_weights.get("one_year_dropout_rate")
 
     @property
     def percent_graduating_with_creds(self):
@@ -163,7 +197,7 @@ class SQRP(object):
         college course, a 3+ on an AP exam, a 4+ on an IB exam, the State Seal
         of Biliteracy, or an approved career certification
         '''
-        return self.__relative_weights.get("percent_graduating_with_creds", 3)
+        return self.__relative_weights.get("percent_graduating_with_creds")
 
     @property
     def college_enrollment_rate(self):
@@ -172,7 +206,7 @@ class SQRP(object):
         enrolled in a two- or four-year college in the fall or spring after
         graduation from high school. Defaults to 3.
         '''
-        return self.__relative_weights.get("college_enrollment_rate", 3)
+        return self.__relative_weights.get("college_enrollment_rate")
 
     @property
     def college_persistence_rate(self):
@@ -182,7 +216,7 @@ class SQRP(object):
         graduation from high school that remain enrolled in college the
         following fall. Defaults to 3.
         '''
-        return self.__relative_weights.get("college_persistence_rate", 3)
+        return self.__relative_weights.get("college_persistence_rate")
 
     @property
     def five_essentials_survey(self):
@@ -196,7 +230,7 @@ class SQRP(object):
         from whatever combination of essentials for which the school has
         sufficient data.
         '''
-        return self.__relative_weights.get("five_essentials_survey", 3)
+        return self.__relative_weights.get("five_essentials_survey")
 
     @property
     def data_quality_index_score(self):
@@ -204,4 +238,15 @@ class SQRP(object):
         The relative weight for indicator 17 of 17: the percentage of data
         quality indicators that are correct in CPS data systems. Defaults to 3.
         '''
-        return self.__relative_weights.get("data_quality_index_score", 3)
+        return self.__relative_weights.get("data_quality_index_score")
+
+    def calculate_base_weight(self):
+        '''
+        Use the relative weights of all indicators to calculate the numerical
+        weight corresponding to a relative weight of 1. Defaults to 1/60, the
+        base weight for the default relative weights.
+
+        Returns:
+            (float): a value between 0 and 1
+        '''
+        return 1 / sum(self.__relative_weights.values())
