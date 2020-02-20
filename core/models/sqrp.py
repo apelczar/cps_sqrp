@@ -32,7 +32,7 @@ A School Quality Rating Policy (SQRP) model
 class SQRP(object):
     def __init__(self, relative_weights={}):
         '''
-        The class constructor.
+        The class constructor
 
         Inputs:
             relative_weights (dict<string, int>): a dictionary with indicator
@@ -47,13 +47,6 @@ class SQRP(object):
             self.__relative_weights = relative_weights
         else:
             self.__relative_weights = DEFAULT_RELATIVE_WEIGHTS
-
-    @property
-    def base_weight(self):
-        '''
-        Calculates the base weight for the model
-        '''
-        return 1 / sum(self.__relative_weights.values())
 
     @property
     def grade_11_sat_3yr_cohort_growth(self):
@@ -245,7 +238,7 @@ class SQRP(object):
         The relative weight for indicator 17 of 17: the percentage of data
         quality indicators that are correct in CPS data systems. Defaults to 3.
         '''
-        return self.__relative_weights.get("data_quality_index_score", 3)
+        return self.__relative_weights.get("data_quality_index_score")
 
     def calculate_base_weight(self):
         '''
@@ -253,12 +246,7 @@ class SQRP(object):
         weight corresponding to a relative weight of 1. Defaults to 1/60, the
         base weight for the default relative weights.
 
-        Returns: float, with a value 0 - 1
+        Returns:
+            (float): a value between 0 and 1
         '''
-        if not self.__relative_weights: #if using default weights
-            return 1/60
-
-        total = 0
-        for weight in self.__relative_weights.values():
-            total += weight
-        return 1 / total
+        return 1 / sum(self.__relative_weights.values())
