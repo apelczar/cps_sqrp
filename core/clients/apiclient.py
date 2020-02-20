@@ -1,5 +1,4 @@
 import json
-import csv
 import requests
 import sqlite3
 import pandas as pd
@@ -23,12 +22,14 @@ def put_df_in_database(data_gen_func, table_name):
 #def generate_enrollment_csv():
     #with open('enrollment.csv', 'w') as writer:
         #writer.write(enrollment.text)
+
 def get_location_data():
     url = "https://data.cityofchicago.org/resource/dw27-rash.json"
-    location_query = "?$query=SELECT school_id, school_latitude, school_longitude WHERE is_high_school = TRUE"
+    location_query = "?$query=SELECT school_id, school_latitude, school_longitude WHERE primary_category = 'HS'"
     location = requests.get(url + location_query)
-    cols = {school_id: str, school_latitude: float, school_longitude = float}
+    cols = {"school_id": str, "school_latitude": float, "school_longitude": float}
     location_data = location.text
+    #print("location.text looks like: ", location.text)
 
     return pd.read_json(location_data, dtype=cols)
 

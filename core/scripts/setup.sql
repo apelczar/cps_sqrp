@@ -23,11 +23,11 @@ CREATE TABLE enrollment
 CREATE TABLE location
 	(school_id varchar(10),
 		school_latitude decimal,
-		school_longitutde decimal,
+		school_longitude decimal,
 		constraint pk_location primary key (school_id)
 );
 
-CREATE TABLE sqrp_excel
+CREATE TABLE sqrp
 	(school_id varchar(10),
 		school_name varchar(50),
 		grade_11_sat_growth_ebrw decimal,
@@ -35,10 +35,10 @@ CREATE TABLE sqrp_excel
 		grade_10_psat_annual_growth_ebrw decimal,
 		grade_10_psat_annual_growth_math decimal,
 		grade_9_psat_cohort_growth decimal,
-		percent_student_college_ready decimal,
+		percent_students_college_ready decimal,
 		avg_daily_attendance_rate decimal,
 		freshmen_on_track_rate decimal,
-		4_year_cohort_graduation_rate decimal,
+		four_year_cohort_graduation_rate decimal,
 		one_year_dropout_rate decimal,
 		percent_graduating_with_creds decimal,
 		college_enrollment_rate decimal,
@@ -48,7 +48,9 @@ CREATE TABLE sqrp_excel
 		aa_sat_growth decimal,
 		hispanic_sat_growth decimal,
 		el_sat_growth decimal,
-		dl_sat_growth decimal)
+		dl_sat_growth decimal,
+		constraint pk_sqrp primary key (school_id)
+);
 
 
 

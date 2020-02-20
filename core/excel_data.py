@@ -5,13 +5,13 @@ import sqlite3
 
 filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 
-#column_names = {"Unnamed: 1": df["Unnamed: 1"][0]}
 
-def import_to_database():
+def import_to_database(): # NEED TO MAKE DATABASE A PARAM IF I WANT TO IMPORT FUNCTION FROM APICLIENT
     df = make_final_df()
-    con = sqlite3.connect("../../db.sqlite3")
+    #print("final_df looks like: ", df)
+    con = sqlite3.connect("../db.sqlite3")
     u = con.cursor()
-    df.to_sql('sqrp_excel', con=con, index=False, if_exists='append')
+    df.to_sql('sqrp', con=con, index=False, if_exists='append')
     return None
 
 
@@ -19,13 +19,14 @@ def make_final_df():
     hs_data = load_and_clean_file(2)
     combo_school_data = load_and_clean_file(3)
     final_df = pd.concat([hs_data, combo_school_data], axis=0)
+
     return final_df
 
 def load_and_clean_file(sheet_name):
     filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
     hs_data = load_data(filename, sheet_name)
     pared_df = pare_df(hs_data)
-    #rename_cols(pared_df)
+
     return rename_cols(pared_df)
 
 
@@ -71,8 +72,9 @@ def pare_df(hs_data):
     cols_to_keep = list(names_dict.keys())
     pared_df = hs_data[cols_to_keep]
     pared_df = pared_df.rename(columns=names_dict)
-    #print("pared_df cols are: ", pared_df.columns)
+
     return pared_df
+
 
 def rename_cols(pared_df):
     '''
@@ -91,7 +93,7 @@ def rename_cols(pared_df):
     "Percent Meeting College Readiness Benchmarks": "percent_students_college_ready",
     "Average Daily Attendance Rate": "avg_daily_attendance_rate",
     "Freshmen On-Track Rate": "freshmen_on_track_rate",
-    "4-Year Cohort Graduation Rate": "4_year_cohort_graduation_rate",
+    "4-Year Cohort Graduation Rate": "four_year_cohort_graduation_rate",
     "1-Year Dropout Rate": "one_year_dropout_rate",
     r"% Earning Early College and Career Credentials": "percent_graduating_with_creds",
     "College Enrollment Rate": "college_enrollment_rate",
@@ -105,12 +107,8 @@ def rename_cols(pared_df):
     }
     
 
-
-    #var_names.update(non_score_vars) # merge dicts
     pared_df = pared_df[list(var_names.keys())] # remove extraneous variables
     final_df = pared_df.rename(columns=var_names)
-    #print("pared_df cols are: ", pared_df.columns)
-
 
     return final_df
 
