@@ -6,6 +6,11 @@
 # Schools (CPS) by assigning rating and attainment scores for each high school
 # in the district and then generating a bias score for the SQRP as a whole.
 
+def process_sqrp(user_input):
+    print("processing user input")
+    for k, v in user_input.items():
+        print(k, ":", v)
+
 def main():
     '''
     The point of entry for the program.
