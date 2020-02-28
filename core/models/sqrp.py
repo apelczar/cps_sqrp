@@ -240,7 +240,8 @@ class SQRP(object):
         '''
         return self.__relative_weights.get("data_quality_index_score")
 
-    def calculate_base_weight(self):
+    @property
+    def base_weight(self):
         '''
         Use the relative weights of all indicators to calculate the numerical
         weight corresponding to a relative weight of 1. Defaults to 1/60, the

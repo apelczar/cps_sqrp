@@ -4,6 +4,13 @@
 #
 ###############
 
+conn = sqlite3.connect("db.sqlite3")
+conn.row_factory = sqlite3.Row
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM sqrp;")
+rows = cursor.fetchall()
+schools = [dict(r) for r in rows]
+
 EMPTY_WEIGHTS_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
                       "priority_group_sat_growth" : 0,
                       "grade_11_sat_growth_ebrw": 0,
@@ -18,24 +25,57 @@ EMPTY_WEIGHTS_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
                       "one_year_dropout_rate": 0,
                       "percent_graduating_with_creds": 0,
                       "college_enrollment_rate": 0,
-                      "college_persistent_rate": 0,
+                      "college_persistence_rate": 0,
                       "five_essentials_survey": 0,
                       "data_quality_index_score": 0
 }
+
+NON_ASSESSMENT_REASSIGNMENT = [
+        ("percent_students_college_ready", reassign_readiness_weight),
+        ("college_persistence_rate", reassign_persistence_weight),
+        ("college_enrollment_rate", reassign_enrollment_weight),
+        ("four_year_cohort_graduation_rate", reassign_graduation_weight),
+        ("freshman_on_track_rate", reassign_on_track_weight),
+        ("avg_daily_attendance_rate", reassign_to_growth),
+        ("one_year_dropout_rate", reassign_to_growth),
+        ("percent_graduating_with_creds", reassign_to_growth),
+        ("five_essentials_survey", reassign_to_growth),
+        ("data_quality_index_score", reassign_to_growth)]
+
+ASSESSMENT_INDICATORS = ["grade_11_sat_3yr_cohort_growth",
+                         "grade_11_sat_growth_ebrw",
+                         "grade_11_sat_growth_math",
+                         "grade_10_psat_annual_growth_ebrw",
+                         "grade_10_psat_annual_growth_math",
+                         "grade_9_psat_cohort_growth"]
+
+PRIORITY_GROUP_INDICATORS = ["aa_sat_growth",
+                             "dl_sat_growth",
+                             "el_sat_growth",
+                             "hispanic_sat_growth"]
 
 class School():
     """
     Represents one school for output
     """
 
-    def __init__(self, name, school_id, latitude, longitude, rating):
-        self.name = name
-        self.id = school_id
-        self.location = (latitude, longitude)
-        self.cps_rating = rating
-        self.sqrp_points = 0
-        self.sqrp_rating = "Inability to Rate"
+    def __init__(self, record, policy):
+        '''
+        Create a School object
+
+        Inputs:
+            record: (dict) one record from the sqrp table
+            policy: an SQRP object
+
+        '''
+
+        self.name = record["school_name"]
+        self.id = record["school_id"]
+        self.location = (record["latitude"], record["longitude"])
+        self.cps_rating = record["rating"]
         self.weights = EMPTY_WEIGHTS_DICT
+        self.sqrp_points = self.calculate_points(record, policy)
+        self.sqrp_rating = self.assign_rating(self.sqrp_points)
 
     def assign_rating(self, points):
         '''
@@ -48,7 +88,9 @@ class School():
             none
         '''
 
-        if total_points > 0 and total_points < 2.0:
+        if total_points == 0 or self.cps_rating == "Inability to Rate":
+        	self.sqrp_rating = "Inability to Rate"
+        elif total_points > 0 and total_points < 2.0:
             self.sqrp_rating = "Level 3"
         elif total_points >= 2.0 and total_points < 3.0:
             self.sqrp_rating = "Level 2"
@@ -60,7 +102,7 @@ class School():
             self.sqrp_rating = "Level 1+"
 
 
-    def calculate_points(self, indicators, policy, base_weight):
+    def calculate_points(self, indicators, policy):
         '''
         Calculate a rating under the user's policy
         Inputs:
@@ -74,148 +116,183 @@ class School():
 
         total_points = 0
 
+        for indicator, function in NON_ASSESSMENT_REASSIGNMENT:
+            total_points += self.calculate_ind_points(indicator, function,
+            										  policy)
+
         #1. Percent of students college-ready
-        readiness_weight = policy.percent_students_college_ready * base_weight
-        if readiness_weight > 0 and not indicators[readiness]:
-            self.reassign_readiness_weight(readiness_weight)
-        else:
-            total_points += readiness_weight * indicators[readiness]
-            self.weights["percent_students_college_ready"] = readiness_weight
-
         #2. College persistence rate
-        persistence_weight = self.weights["college_persistent_rate"] + (
-            policy.college_persistent_rate * base_weight)
-        if persistence_weight > 0 and not indicators[persistence]:
-            self.reassign_persistence_weight(persistence_weight)
-        else:
-            total_points += persistence_weight * indicators[persistence]
-            self.weights["college_persistent_rate"] = persistence_weight
-
         #3. College enrollment rate
-        enrollment_weight = self.weights["college_enrollment_rate"] + (
-            policy.college_enrollment_rate * base_weight)
-        if enrollment_weight > 0 and not indicators[enrollment]:
-            self.reassign_enrollment_weight(enrollment_weight)
-        else:
-            total_points += enrollment_weight * indicators[enrollment]
-            self.weights["college_enrollment_rate"] = enrollment_weight
-
         #4. Graduation rate
-        graduation_weight = self.weights["four_year_cohort_graduation_rate"] + (
-            policy.four_year_cohort_graduation_rate * base_weight)
-        if graduation_weight > 0 and not indicators[graduation_rate]:
-            self.reassign_graduation_weight(graduation_weight)
-        else:
-            total_points += graduation_weight * indicators[graduation_rate]
-            self.weights["four_year_cohort_graduation_rate"] = graduation_weight
-
         #5. Freshman-on-track rate
-        on_track_weight = self.weights["freshman_on_track_rate"] + (
-            policy.freshman_on_track_rate * base_weight)
-        if on_track_weight > 0 and not indicators[freshman_on_track_rate]:
-            self.reassign_on_track_weight(on_track_weight)
-        else:
-            total_points += on_track_weight * indicators[freshman_on_track_rate]
-            self.weights["freshman_on_track_rate"] = on_track_weight
-
         #6. Average daily attendance
-        attendance_weight = self.weights["avg_daily_attendance_rate"] + (
-            policy.avg_daily_attendance_rate * base_weight)
-        if attendance_weight > 0 and not indicators[attendance]:
-            self.reassign_to_growth(attendance_weight, indicators, policy)
-        else:
-            total_points += attendance_weight * indicators[attendance]
-            self.weights["avg_daily_attendance_rate"] = attendance_weight
-
         #7. Dropout rate
-        dropout_weight = self.weights["one_year_dropout_rate"] + (
-            policy.one_year_dropout_rate * base_weight)
-        if dropout_weight > 0 and not indicators[one_year_dropout_rate]:
-            self.reassign_to_growth(dropout_weight, indicators, policy)
-        else:
-            total_points += dropout_weight * indicators[one_year_dropout_rate]
-            self.weights["one_year_dropout_rate"] = dropout_weight
-
         #8. Graduation with early college/career credentials
-        credential_weight = self.weights["percent_graduating_with_creds"] + (
-            policy.percent_graduating_with_creds * base_weight)
-        if credential_weight > 0 and not indicators[credentials]:
-            self.reassign_to_growth(credential_weight, indicators, policy)
-        else:
-            total_points += credential_weight * indicators[credentials]
-            self.weights["percent_graduating_with_creds"] = credential_weight
-
         #9. 5 Essentials Survey
-        survey_weight = self.weights["five_essentials_survey"] + (
-            policy.five_essentials_survey * base_weight)
-        if survey_weight > 0 and not indicators[survey]:
-            self.reassign_to_growth(survey_weight, indicators, policy)
-        else:
-            total_points += survey_weight * indicators[survey]
-            self.weights["five_essentials_survey"] = survey_weight
-
         #10. Data Quality Index
-        quality_weight = self.weights["data_quality_index_score"] + (
-            policy.data_quality_index_score * base_weight)
-        if quality_weight > 0 and not indicators[data_quality]:
-            self.reassign_to_growth(quality_weight, indicators, policy)
-        else:
-            total_points += survey_weight * indicators[data_quality]
-            self.weights["data_quality_index_score"] = quality_weight
+        
+        #Assessment indicators
+        #Calculate priority group weights and points
+        if policy.priority_group_sat_growth > 0:
+            total_points += self.calculate_priority_group_points(policy)
+        
+        #Calculate and reassign weights as needed
+        self.calculate_growth_weights(policy)
+        
+        #Use the weights to calculate scores
+        for measure in ASSESSMENT_INDICATORS:
+            if indicators[measure]:
+                total_points += self.weights[measure] * indicators[measure]
 
+        #Check that all weight has been reassigned
+        #If it hasn't inflate currently calculated points to reflect full weighting
+        total_weight = sum(self.weights.values())
+        if total_weight != 1 and total_weight != 0:
+            inflation = 1 / total_weight
+            total_points = total_points * inflation
+            for ind, weight in self.weights.items():
+                self.weights[ind] = weight * inflation
 
         return total_points
 
 
+    def calculate_ind_points(self, indicator, reassignment_function, policy):
+        '''
+        Calculates the weight for the given indicator and, if possible,
+        calculates the score for that indicator. If not, reassigns the
+        weight according to the rules for that indicator.
+
+        Note that this function must be run for all indicators, even if they
+        have a relative weight of 0, because other indicators may
+        reassign weight to them.
+
+        Inputs:
+            indicator: (str) the name of the indicator
+            reassignment_function: to reassign weight if needed
+            policy: an SQRP object
+
+        Returns:
+            (float) the points for that indicator
+        '''
+
+        ind_weight = self.weights[indicator] + (
+            policy.indicator * policy.base_weight)
+        if not indicators[indicator]:
+            if ind_weight:
+                self.reassignment_function(ind_weight, indicators, policy)
+                self.weights[indicator] = 0
+            return 0
+        else:
+            self.weights[indicator] = ind_weight
+            return ind_weight * indicators[indicator]
+
+
     def reassign_readiness_weight(self, weight, indicators, policy):
-        non_assessment_count = 0
-        for i in indicators: #subset to proper indicators
-            if i and policy.i > 0:
-                non_assessment_count += 1
-        reassigned_weight = 1 / non_assessment_count if (
-            non_assessment_count > 0 else 1 / 9)
-        for i in indicators: #subset to proper indicators
-            self.weights[i] = self.weights[i] + reassigned_weight
+        '''
+        Reassigns weight from the college readiness indicator.
+
+        Inputs:
+            weight: (float) the numerical weight for college readiness
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            none
+        '''
+
+        usable_indicators = []
+        for indicator, fun in NON_ASSESSMENT_REASSIGNMENT[1:]:
+            if indicators[indicator] and policy.indicator:
+                usable_indicators.append(indicator)
+        if not usable_indicators:
+            return
+        reassigned_wt = 1 / len(usable_indicators)
+        for indicator in usable_indicators:
+            self.weights[indicator] = self.weights[indicator] + reassigned_wt
 
     def reassign_persistence_weight(self, weight, indicators, policy):
-        if indicators[enrollment] and policy.college_enrollment_rate > 0:
-            self.weights["college_enrollment_rate"] = (
+        '''
+        Reassigns weight from the college persistence indicator.
+
+        Inputs:
+            weight: (float) the numerical weight for college persistence
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            none
+        '''
+
+        self.weights["college_enrollment_rate"] = (
                 self.weights["college_enrollment_rate"] + weight)
-        else:
-            self.reassign_enrollment_weight(weight, indicators, policy)
+
 
     def reassign_enrollment_weight(self, weight, indicators, policy):
-        if indicators[graduation_rate] and (
-            policy.four_year_cohort_graduation_rate > 0):
-            self.weights["four_year_cohort_graduation_rate"] = (
+        '''
+        Reassigns weight from the college enrollment indicator.
+
+        Inputs:
+            weight: (float) the numerical weight for college enrollment
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            none
+        '''
+
+        self.weights["four_year_cohort_graduation_rate"] = (
                 self.weights["four_year_cohort_graduation_rate"] + weight)
-        else:
-            self.reassign_graduation_weight(weight, indicators, policy)
+
 
     def reassign_graduation_weight(self, weight, indicators, policy):
+        '''
+        Reassigns weight from the graduation rate indicator.
+
+        Inputs:
+            weight: (float) the numerical weight for graduation rate
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            none
+        '''
+
         rel_weight_total = 0
         weight_reassignment = {"freshman_on_track_rate": 2,
                                "avg_daily_attendance_rate": 1,
                                "one_year_dropout_rate": 1}
         for indicator, rel_weight in weight_reassignment.items():
-            if policy.indicator > 0:
+            if policy.indicator:
                 rel_weight_total += rel_weight
-        reassign_weight = 1 / rel_weight_total if rel_weight_total > 0 else 1 / 4
-        if indicators[freshman_on_track_rate] and policy.freshman_on_track_rate > 0:
-            self.weights["freshman_on_track_rate"] = (
-                self.weights["freshman_on_track_rate"] + (2 * reassign_weight))
-        else:
-            self.reassign_on_track_weight(2 * reassign_weight, indicators, policy)
-        if indicators[attendance] and policy.avg_daily_attendance_rate > 0:
-            self.weights["avg_daily_attendance_rate"] = (
-                self.weights["avg_daily_attendance_rate"] + reassign_weight)
-        else:
-            self.reassign_to_growth(reassign_weight, indicators, policy)
-        if indicators[one_year_dropout_rate] and policy.one_year_dropout_rate > 0:
-            self.weights["one_year_dropout_rate"] = (
-                self.weights["one_year_dropout_rate"] + reassign_weight)
-        else:
-            self.reassign_to_growth(reassign_weight, indicators, policy)
+        if not rel_weight_total:
+            return
+        reassigned_weight = 1 / rel_weight_total
+
+        #Note that in this situation, the weight is only distributed
+        #if available. So, we must check here that we can reassign.
+        for indicator, rel_weight in weight_reassignment.items():
+            if indicators[indicator] and policy.indicator:
+                self.weights[indicator] = (self.weights[indicator]
+                    + (rel_weight * reassigned_weight))
+
+
+    def reassign_on_track_weight(self, weight, indicators, policy):
+        '''
+        Reassigns weight from the freshman on track indicator.
+
+        Inputs:
+            weight: (float) the numerical weight for freshman on track
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            none
+        '''
+
+        self.weights["avg_daily_attendance_rate"] = (
+            self.weights["avg_daily_attendance_rate"] + (weight / 2))
+        self.weights["one_year_dropout_rate"] = (
+            self.weights["one_year_dropout_rate"] + weight / 2)
 
 
     def reassign_to_growth(self, weight, indicators, policy):
@@ -227,10 +304,12 @@ class School():
 
         Inputs:
             weight: the numerical weight for the category to be
-                    redistributed (the relative weight * base weight)
+                    redistributed
+            indicators: (dict) the record for the school
+            policy: an SQRP object
 
         Returns:
-            the points for that indicator, based on reassignment
+            none
 
         '''
         weight_reassignment = {"grade_11_sat_3yr_cohort_growth": 2,
@@ -241,14 +320,96 @@ class School():
                                "grade_9_psat_cohort_growth": 2}
         rel_weight_total = 0
         for indicator, rel_weight in weight_reassignment.items():
-            if policy.indicator > 0:
+            if policy.indicator:
                 rel_weight_total += rel_weight
-        reassigned_weight = weight * (1 / rel_weight_total) if (
-            rel_weight_total > 0 else 1 / 8)
-        points = 0
-        for i in indicators: #adjust this to reflect data structure
-            if policy.i > 0 and not i:
-                points += reassign_weights2(args)
+        if not rel_weight_total:
+            return
+        reassigned_weight = weight * (1 / rel_weight_total)
+        for indicator in ASSESSMENT_INDICATORS
+            if policy.indicator:
+                self.weights[indicator] = self.weights[indicator] + (
+                    weight * reassigned_weight * weight_reassignment[indicator])
+
+
+    def calculate_priority_group_points(self, indicators, policy):
+        '''
+        Calculates the points for the 11th grade SAT priority groups.
+        Also reassigns weight as needed.
+
+        Inputs:
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            (float) the points for the priority group category
+
+        '''
+        priority_num_weight = (policy.priority_group_weight * 
+                               policy.base_weight) / 4
+        priority_points = 0
+        for group in PRIORITY_GROUP_INDICATORS:
+            if indicators[group]:
+                priority_points += indicators[group]
             else:
-                points += adj_base_weight * weight_reassignment[i] * i
-        return points
+                self.weights["grade_11_sat_3yr_cohort_growth"] = (
+                    self.weights["grade_11_sat_3yr_cohort_growth"] +
+                    priority_num_weight)
+        return priority_points
+
+
+    def calculate_growth_weights(self, indicators, policy):
+        '''
+        Calculates the weights for all SAT growth measures other than
+        priority groups
+
+        Inputs:
+            indicators: (dict)
+            policy: an SQRP object
+
+        Returns:
+            none
+        '''
+
+        #Get base numerical weights
+        for indicator in ASSESSMENT_INDICATORS:
+            self.weights[str(indicator)] = self.weights[str(indicator)] + (
+            policy.indicator * policy.base_weight)
+
+        grade_level_growth_count = 0
+        grade_level_growth_weight = 0
+        weight_to_reassign = 0
+        for measure in ASSESSMENT_INDICATORS[1:]:
+            if policy.measure and indicators[measure]:
+                grade_level_growth_count += 1
+                grade_level_growth_weight += self.weights[measure]
+            elif policy.measure and not indicators[measure]:
+                weight_to_reassign += self.weights[measure]
+
+        #If all grade-level growth measures are missing and/or not included,
+        #give any weight for them to cohort growth. If cohort growth is
+        #also missing or not included, reassignment fails.
+        if not grade_level_growth_count and (not (
+            indicators[grade_11_sat_3yr_cohort_growth]) or not
+            policy.grade_11_sat_3yr_cohort_growth):
+            return
+        if not grade_level_growth_count and (
+            indicators["grade_11_sat_3yr_cohort_growth"] and
+            policy.grade_11_sat_3yr_cohort_growth):
+            self.weights["grade_11_sat_3yr_cohort_growth"] = (
+                self.weights["grade_11_sat_3yr_cohort_growth"] +
+                grade_level_growth_weight)
+            return
+
+        #If there is weight to reassign among one-year growth indicators:
+        reassigned_weight = weight_to_reassign * (1 / grade_level_growth_count)
+        #and also reassign 3-yr growth if needed
+        if (policy.grade_11_sat_3yr_cohort_growth and not 
+            indicators["grade_11_sat_3yr_cohort_growth"]):
+            reassigned_weight += self.weights["grade_11_sat_3yr_cohort_growth"] * (
+                1 / grade_level_growth_count)
+        for measure in ASSESSMENT_INDICATORS[1:]:
+            if policy.measure and indicators[measure]:
+                self.weights[measure] = self.weights[measure] + reassigned_weight
+
+
+
