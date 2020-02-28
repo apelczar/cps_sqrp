@@ -25,9 +25,9 @@ def make_final_df():
 def load_and_clean_file(sheet_name):
     filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
     hs_data = load_data(filename, sheet_name)
-    pared_df = pare_df(hs_data)
+    pared_df = pare_df(hs_data, sheet_name)
 
-    return rename_cols(pared_df)
+    return rename_cols(pared_df, sheet_name)
 
 
 def load_data(filename, sheet_name): 
@@ -40,14 +40,21 @@ def load_data(filename, sheet_name):
         df.drop(df.columns[74], axis=1, inplace=True)
     return df
 
-def initial_clean(hs_data):
+def initial_clean(hs_data, sheet_name): # JUST ADDED SHEET_NAME VAR
     #hs_data = load_data(filename, sheet_name)
     cols_to_keep = []
     for col in hs_data.columns:
         #if re.search(r': Score', col):
-        if re.search(r': Points|School ID|School Name', col):
+        if re.search(r': Points|School ID|School Name|SY 2018-2019 SQRP Rating', col):
             #re.sub(r' :', "", col)
             cols_to_keep.append(col)
+        if sheet_name == 2:
+            if re.search(r'SQRP Total Points Earned', col):
+                cols_to_keep.append(col)
+        if sheet_name == 3: # combo sheet
+            if re.search(r'High School SQRP Points Earned', col):
+                cols_to_keep.append(col)
+        #elif sheet_name
     clean_names = {}
     #print("cols to keep: ", cols_to_keep)
     for col in cols_to_keep:
@@ -64,19 +71,20 @@ def initial_clean(hs_data):
         clean_names[col] = col_clean
     return clean_names
 
-def pare_df(hs_data):
+def pare_df(hs_data, sheet_name):
     '''
     Specifies columns to keep and cleans their names
     '''
-    names_dict = initial_clean(hs_data)
+    names_dict = initial_clean(hs_data, sheet_name)
     cols_to_keep = list(names_dict.keys())
+    #print("cols_to_keep looks like: ", cols_to_keep)
     pared_df = hs_data[cols_to_keep]
     pared_df = pared_df.rename(columns=names_dict)
 
     return pared_df
 
 
-def rename_cols(pared_df):
+def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
     '''
     Assigns new names to all columns
     Inputs:
@@ -85,6 +93,7 @@ def rename_cols(pared_df):
 
     var_names = {"School ID": "school_id",
     "School Name": "school_name",
+    "SAT11 Cohort Growth Percentile": "grade_11_sat_3yr_cohort_growth",
     "SAT11 EBRW Annual Growth Percentile": "grade_11_sat_growth_ebrw",
     "SAT11 MATH Annual Growth Percentile": "grade_11_sat_growth_math",
     "PSAT10 EBRW Annual Growth Percentile": "grade_10_psat_annual_growth_ebrw",
@@ -103,8 +112,15 @@ def rename_cols(pared_df):
     "SAT11 African-American Cohort Growth Percentile": "aa_sat_growth",
     "SAT11 Hispanic Cohort Growth Percentile": "hispanic_sat_growth",
     "SAT11 English Learner Cohort Growth Percentile": "el_sat_growth",
-    "SAT11 Diverse Learner Cohort Growth Percentile": "dl_sat_growth"
+    "SAT11 Diverse Learner Cohort Growth Percentile": "dl_sat_growth",
+    "SY 2018-2019 SQRP Rating": "current_sqrp_rating"
     }
+
+    if sheet_name == 2:
+        var_names["SQRP Total Points Earned"] = "current_sqrp_points"
+    
+    if sheet_name == 3:
+        var_names["High School SQRP Points Earned"] = "current_sqrp_points"
     
 
     pared_df = pared_df[list(var_names.keys())] # remove extraneous variables
