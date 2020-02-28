@@ -1,22 +1,38 @@
 import json
-import csv
 import requests
 import sqlite3
 import pandas as pd
 
 #url1 = "https://data.cityofchicago.org/resource/kh4r-387c.csv"
+def set_up_db():
+    put_df_in_database(get_enrollment_data(), 'enrollment')
+    put_df_in_database(get_location_data(), 'location')
 
-def put_df_in_database():
-    df = get_enrollment_data()
+def put_df_in_database(data_gen_func, table_name):
+    df = data_gen_func
     con = sqlite3.connect("../../db.sqlite3")
     u = con.cursor()
-    df.to_sql('enrollment', con=con, index=False, if_exists='append')
+    df.to_sql(table_name, con=con, index=False, if_exists='append')
 
-
+#def put_loc_in_database():
+    #df = get_location_data()
+    #con = sqlite3.connect("../../db.sqlite3")
+    #u = con.cursor()
+    #df.to_sql('location', con=con, index=False, if_exists='append')
 #def generate_enrollment_csv():
     #with open('enrollment.csv', 'w') as writer:
         #writer.write(enrollment.text)
- 
+
+def get_location_data():
+    url = "https://data.cityofchicago.org/resource/dw27-rash.json"
+    location_query = "?$query=SELECT school_id, school_latitude, school_longitude WHERE primary_category = 'HS'"
+    location = requests.get(url + location_query)
+    cols = {"school_id": str, "school_latitude": float, "school_longitude": float}
+    location_data = location.text
+    #print("location.text looks like: ", location.text)
+
+    return pd.read_json(location_data, dtype=cols)
+
 
 def get_enrollment_data():
     url = "https://data.cityofchicago.org/resource/kh4r-387c.json"
@@ -29,8 +45,8 @@ def get_enrollment_data():
     "student_count_other_ethnicity": int, "student_count_asian_pacific": int, "student_count_multi": int,
     "student_count_hawaiian_pacific": int, "student_count_ethnicity_not": int, "bilingual_services": bool,
     "refugee_services": bool, "title_1_eligible": bool}
-    print("data looks like: ", data)
-    print("type of data: ", type(data))
+    #print("data looks like: ", data)
+    #print("type of data: ", type(data))
     return pd.read_json(data, dtype=cols)
 
     #return enrollment_df.to_sql("enrollment")
@@ -55,7 +71,7 @@ def gen_enrollment_query():
 
     return query
 
-def gen_progress_data_query():
+#def gen_progress_data_query():
     '''
     Generates a query to select info from School Progress Reports API
     '''
