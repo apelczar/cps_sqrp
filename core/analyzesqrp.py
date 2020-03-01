@@ -6,6 +6,11 @@
 # Schools (CPS) by assigning rating and attainment scores for each high school
 # in the district and then generating a bias score for the SQRP as a whole.
 
+import sqlite3
+import bias_score
+import school
+import sqrp
+
 def process_sqrp(user_input):
     print("processing user input")
     for k, v in user_input.items():
@@ -16,6 +21,48 @@ def main():
     The point of entry for the program.
     '''
     print("test main")
+
+def calculate_sqrp_scores(policy):
+    '''
+    Calculate the SQRP scores and the bias score of a policy.
+
+    Inputs:
+        SQRP object
+
+    Returns:
+        school_lst: a list of School objects
+        bias_score: an integer, 0-100
+    '''
+
+    school_records = get_records()
+    school_lst = []
+    for record in school_records:
+        s_obj = school.School(record, policy)
+        school_lst.append(s_obj)
+    bias_score = bias_score.calculate_bias_score()
+    return school_lst, bias_score
+
+
+def get_records():
+    '''
+    Obtains school records from the database.
+    
+    Inputs:
+        none
+
+    Returns:
+        a list of dictionaries, where each dictionary represents a school
+    '''
+
+    conn = sqlite3.connect("../db.sqlite3")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM sqrp JOIN location ON
+                      sqrp.school_id = location.school_id;''')
+    rows = cursor.fetchall()
+    schools = [dict(r) for r in rows]
+    conn.close()
+    return schools
 
 if __name__ == '__main__':
     main()
