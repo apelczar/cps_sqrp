@@ -4,6 +4,8 @@
 #
 ###############
 
+from decimal import Decimal, ROUND_HALF_UP
+
 import sqlite3
 conn = sqlite3.connect("../../db.sqlite3")
 conn.row_factory = sqlite3.Row
@@ -13,35 +15,25 @@ cursor.execute('''SELECT * FROM sqrp JOIN location ON
 rows = cursor.fetchall()
 schools = [dict(r) for r in rows]
 
-#output = []
-#for s in schools:
-#    school_obj = School(s, policy)
-#    #update table of scores for bias rating
-#    output.append(s)
 
-#return output
-
-EMPTY_WEIGHTS_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
-                      "priority_group_sat_growth" : 0,
-                      "grade_11_sat_growth_ebrw": 0,
-                      "grade_11_sat_growth_math": 0,
-                      "grade_10_psat_annual_growth_ebrw": 0,
-                      "grade_10_psat_annual_growth_math": 0,
-                      "grade_9_psat_cohort_growth" : 0,
-                      "percent_students_college_ready": 0,
-                      "avg_daily_attendance_rate": 0,
-                      "freshmen_on_track_rate": 0,
-                      "four_year_cohort_graduation_rate": 0,
-                      "one_year_dropout_rate": 0,
-                      "percent_graduating_with_creds": 0,
-                      "college_enrollment_rate": 0,
-                      "college_persistence_rate": 0,
-                      "five_essentials_survey": 0,
-                      "data_quality_index_score": 0
+BASE_INDICATOR_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
+                       "priority_group_sat_growth" : 0,
+                       "grade_11_sat_growth_ebrw": 0,
+                       "grade_11_sat_growth_math": 0,
+                       "grade_10_psat_annual_growth_ebrw": 0,
+                       "grade_10_psat_annual_growth_math": 0,
+                       "grade_9_psat_cohort_growth" : 0,
+                       "percent_students_college_ready": 0,
+                       "avg_daily_attendance_rate": 0,
+                       "freshmen_on_track_rate": 0,
+                       "four_year_cohort_graduation_rate": 0,
+                       "one_year_dropout_rate": 0,
+                       "percent_graduating_with_creds": 0,
+                       "college_enrollment_rate": 0,
+                       "college_persistence_rate": 0,
+                       "five_essentials_survey": 0,
+                       "data_quality_index_score": 0
 }
-
-
-
 
 
 ASSESSMENT_INDICATORS = ["grade_11_sat_3yr_cohort_growth",
@@ -70,11 +62,11 @@ def calculate_points(school, indicators, policy):
         the points that the school earned under the policy
     '''
 
-    total_points = 0
+    points_dict = BASE_INDICATOR_DICT.copy()
 
     for indicator, function in NON_ASSESSMENT_REASSIGNMENT:
-        total_points += calculate_ind_points(school, indicators, indicator,
-                                                  function, policy)
+        points_dict[indicator] = calculate_ind_points(school, indicators,
+                                                indicator, function, policy)
 
     #1. Percent of students college-ready
     #2. College persistence rate
@@ -90,8 +82,8 @@ def calculate_points(school, indicators, policy):
     #Assessment indicators
     #Calculate priority group weights and points
     if policy.priority_group_sat_growth > 0:
-        total_points += calculate_priority_group_points(school, indicators,
-                                                             policy)
+        points_dict["priority_group_sat_growth"] = (
+            calculate_priority_group_points(school, indicators, policy))
     
     #Calculate and reassign weights as needed
     calculate_growth_weights(school, indicators, policy)
@@ -99,18 +91,26 @@ def calculate_points(school, indicators, policy):
     #Use the weights to calculate scores
     for measure in ASSESSMENT_INDICATORS:
         if indicators[measure]:
-            total_points += school.weights[measure] * indicators[measure]
+            points_dict[measure] = school.weights[measure] * indicators[measure]
 
     #Check that all weight has been reassigned
-    #If it hasn't inflate currently calculated points to reflect full weighting
-    total_weight = sum(school.weights.values())
+    #If it hasn't inflate currently calculated points according to their
+    #relative weight
+    total_weight = round(sum(school.weights.values()), 2)
     if total_weight != 1 and total_weight != 0:
-        inflation = 1 / total_weight
-        total_points = total_points * inflation
-        for ind, weight in school.weights.items():
-            school.weights[ind] = weight * inflation
+        used_rel_weight_total = 0
+        for indicator, weight in school.weights.items():
+            if weight:
+                used_rel_weight_total += policy.relative_weights[indicator]
+        inflation_base = (1 - total_weight) / used_rel_weight_total
+        for ind, points in points_dict.items():
+            if school.weights[ind] and ind != "priority_group_sat_growth":
+                added_weight = inflation_base * policy.relative_weights[ind]
+                points_dict[ind] = points + (indicators[ind] * added_weight)
+                school.weights[ind] = school.weights[ind] + added_weight
 
-    return total_points
+    #add 0.001 to handle errors due to floating point values
+    return sum(points_dict.values()) + 0.001
 
 
 def calculate_ind_points(school, indicators, indicator,
@@ -135,7 +135,7 @@ def calculate_ind_points(school, indicators, indicator,
 
     ind_weight = school.weights[indicator] + (
         policy.relative_weights[indicator] * policy.base_weight)
-    print(indicator, ind_weight)
+    #print(indicator, ind_weight)
     if policy.relative_weights[indicator] and indicators[indicator]:
         school.weights[indicator] = ind_weight
         return ind_weight * indicators[indicator]
@@ -164,9 +164,10 @@ def reassign_readiness_weight(school, weight, indicators, policy):
             usable_indicators.append(indicator)
     if not usable_indicators:
         return
-    reassigned_wt = 1 / len(usable_indicators)
+    reassigned_wt = weight / len(usable_indicators)
     for indicator in usable_indicators:
         school.weights[indicator] = school.weights[indicator] + reassigned_wt
+
 
 def reassign_persistence_weight(school, weight, indicators, policy):
     '''
@@ -271,6 +272,7 @@ def reassign_to_growth(school, weight, indicators, policy):
         none
 
     '''
+
     weight_reassignment = {"grade_11_sat_3yr_cohort_growth": 2,
                            "grade_11_sat_growth_ebrw": 1,
                            "grade_11_sat_growth_math": 1,
@@ -289,7 +291,7 @@ def reassign_to_growth(school, weight, indicators, policy):
     for indicator in ASSESSMENT_INDICATORS:
         if policy.relative_weights[indicator]:
             school.weights[indicator] = school.weights[indicator] + (
-                weight * reassigned_weight * weight_reassignment[indicator])
+                reassigned_weight * weight_reassignment[indicator])
 
 
 def calculate_priority_group_points(school, indicators, policy):
@@ -409,9 +411,16 @@ class School():
         self.id = record["school_id"]
         self.location = (record["school_latitude"], record["school_longitude"])
         self.cps_rating = record["current_sqrp_rating"]
-        self.weights = EMPTY_WEIGHTS_DICT
-        self.sqrp_points = round(calculate_points(self, record, policy), 1)
+        self.weights = BASE_INDICATOR_DICT.copy()
+        points = calculate_points(self, record, policy)
+        self.sqrp_points = float(Decimal(str(points)).quantize(Decimal("0.1"),
+                                 rounding=ROUND_HALF_UP))
         self.sqrp_rating = self.assign_rating(self.sqrp_points)
+
+
+    def __repr__(self):
+        return "{}, ID {}: {} points, rating of {}".format(self.name, self.id,
+            self.sqrp_points, self.sqrp_rating)
 
 
     def assign_rating(self, points):
@@ -437,3 +446,4 @@ class School():
             return "Level 1"
         else:
             return "Level 1+"
+
