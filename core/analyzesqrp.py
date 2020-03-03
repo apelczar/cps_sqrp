@@ -34,12 +34,15 @@ def calculate_sqrp_scores(policy):
         bias_score: an integer, 0-100
     '''
 
-    school_records = get_records()
+    school_records, enrollment = get_records()
     school_lst = []
+    enrollment["sqrp_points"] = 0
     for record in school_records:
         s_obj = school.School(record, policy)
         school_lst.append(s_obj)
-    bias_score = bias_score.calculate_bias_score()
+        if s_obj.sqrp_rating != "Inability to Rate":
+            enrollment.loc[str(s_obj.id)]["sqrp_points"] = s_obj.sqrp_points
+    bias_score = bias_score.calculate_bias_score(enrollment)
     return school_lst, bias_score
 
 
@@ -61,8 +64,10 @@ def get_records():
                       sqrp.school_id = location.school_id;''')
     rows = cursor.fetchall()
     schools = [dict(r) for r in rows]
+    enrollment = pd.read_sql_query("SELECT * FROM enrollment",
+                                   conn, index_col="school_id")
     conn.close()
-    return schools
+    return schools, enrollment
 
 if __name__ == '__main__':
     main()

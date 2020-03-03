@@ -62,28 +62,17 @@ def calculate_points(school, indicators, policy):
         the points that the school earned under the policy
     '''
 
-    points_dict = BASE_INDICATOR_DICT.copy()
+    total_points = 0
 
     for indicator, function in NON_ASSESSMENT_REASSIGNMENT:
-        points_dict[indicator] = calculate_ind_points(school, indicators,
-                                                indicator, function, policy)
+        total_points += calculate_ind_points(school, indicators,
+                                             indicator, function, policy)
 
-    #1. Percent of students college-ready
-    #2. College persistence rate
-    #3. College enrollment rate
-    #4. Graduation rate
-    #5. Freshman-on-track rate
-    #6. Average daily attendance
-    #7. Dropout rate
-    #8. Graduation with early college/career credentials
-    #9. 5 Essentials Survey
-    #10. Data Quality Index
-    
     #Assessment indicators
     #Calculate priority group weights and points
     if policy.priority_group_sat_growth > 0:
-        points_dict["priority_group_sat_growth"] = (
-            calculate_priority_group_points(school, indicators, policy))
+        total_points += calculate_priority_group_points(school, indicators,
+                                                        policy)
     
     #Calculate and reassign weights as needed
     calculate_growth_weights(school, indicators, policy)
@@ -91,7 +80,7 @@ def calculate_points(school, indicators, policy):
     #Use the weights to calculate scores
     for measure in ASSESSMENT_INDICATORS:
         if indicators[measure]:
-            points_dict[measure] = school.weights[measure] * indicators[measure]
+            total_points += school.weights[measure] * indicators[measure]
 
     #Check that all weight has been reassigned
     #If it hasn't inflate currently calculated points according to their
@@ -100,17 +89,19 @@ def calculate_points(school, indicators, policy):
     if total_weight != 1 and total_weight != 0:
         used_rel_weight_total = 0
         for indicator, weight in school.weights.items():
-            if weight:
+            if weight and indicator != "priority_group_sat_growth":
                 used_rel_weight_total += policy.relative_weights[indicator]
         inflation_base = (1 - total_weight) / used_rel_weight_total
-        for ind, points in points_dict.items():
-            if school.weights[ind] and ind != "priority_group_sat_growth":
-                added_weight = inflation_base * policy.relative_weights[ind]
-                points_dict[ind] = points + (indicators[ind] * added_weight)
-                school.weights[ind] = school.weights[ind] + added_weight
+        for indicator in school.weights:
+            if (school.weights[indicator] and indicator != 
+                "priority_group_sat_growth"):
+                added_weight = inflation_base * policy.relative_weights[indicator]
+                total_points += indicators[indicator] * added_weight
+                school.weights[indicator] = (school.weights[indicator]
+                                             + added_weight)
 
     #add 0.001 to handle errors due to floating point values
-    return sum(points_dict.values()) + 0.001
+    return total_points + 0.001
 
 
 def calculate_ind_points(school, indicators, indicator,
@@ -135,7 +126,6 @@ def calculate_ind_points(school, indicators, indicator,
 
     ind_weight = school.weights[indicator] + (
         policy.relative_weights[indicator] * policy.base_weight)
-    #print(indicator, ind_weight)
     if policy.relative_weights[indicator] and indicators[indicator]:
         school.weights[indicator] = ind_weight
         return ind_weight * indicators[indicator]
@@ -216,24 +206,12 @@ def reassign_graduation_weight(school, weight, indicators, policy):
         none
     '''
 
-    rel_weight_total = 0
-    weight_reassignment = {"freshmen_on_track_rate": 2,
-                           "avg_daily_attendance_rate": 1,
-                           "one_year_dropout_rate": 1}
-    for indicator, rel_weight in weight_reassignment.items():
-        if indicators[indicator] and policy.relative_weights[indicator]:
-            rel_weight_total += rel_weight
-
-    if not rel_weight_total:
-        return
-    reassigned_weight = 1 / rel_weight_total
-
-    #Note that in this situation, the weight is only distributed
-    #if available. So, we must check here that we can reassign.
-    for indicator, rel_weight in weight_reassignment.items():
-        if indicators[indicator] and policy.relative_weights[indicator]:
-            school.weights[indicator] = (school.weights[indicator]
-                + (weight * rel_weight * reassigned_weight))
+    school.weights["freshmen_on_track_rate"] = (
+        school.weights["freshmen_on_track_rate"] + (weight / 2))
+    school.weights["avg_daily_attendance_rate"] = (
+        school.weights["avg_daily_attendance_rate"] + (weight / 4))
+    school.weights["one_year_dropout_rate"] = (
+        school.weights["one_year_dropout_rate"] + (weight / 4))
 
 
 def reassign_on_track_weight(school, weight, indicators, policy):
@@ -287,7 +265,7 @@ def reassign_to_growth(school, weight, indicators, policy):
     if not rel_weight_total:
         return
 
-    reassigned_weight = weight * (1 / rel_weight_total)
+    reassigned_weight = weight / rel_weight_total
     for indicator in ASSESSMENT_INDICATORS:
         if policy.relative_weights[indicator]:
             school.weights[indicator] = school.weights[indicator] + (
@@ -307,6 +285,7 @@ def calculate_priority_group_points(school, indicators, policy):
         (float) the points for the priority group category
 
     '''
+
     priority_num_weight = (policy.relative_weights["priority_group_sat_growth"] * 
                            policy.base_weight) / 4
     priority_points = 0
