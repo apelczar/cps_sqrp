@@ -40,14 +40,19 @@ def get_enrollment_data():
     data = enrollment.text
     cols = {"school_id": str, "student_count_total": int,
     "student_count_low_income": int, "student_count_special_ed": int,
-    "student_count_english_learners": int, "student_count_black": int, "student_count_hispanic": int,
-    "student_count_white": int, "student_count_asian": int, "student_count_native_american": int,
-    "student_count_other_ethnicity": int, "student_count_asian_pacific": int, "student_count_multi": int,
-    "student_count_hawaiian_pacific": int, "student_count_ethnicity_not": int, "bilingual_services": bool,
-    "refugee_services": bool, "title_1_eligible": bool}
+    "student_count_english_learners": int}
+    df = pd.read_json(data, dtype=cols)
+    df["percent_low_income"] = (df["student_count_low_income"] / 
+                                df["student_count_total"])
+    df["percent_english_learners"] = (df["student_count_english_learners"] / 
+                                      df["student_count_total"])
+    df["percent_special_ed"] = (df["student_count_special_ed"] / 
+                                df["student_count_total"])
+    df.drop("student_count_total", "student_count_low_income", 
+        "student_count_special_ed", "student_count_english_learners")
     #print("data looks like: ", data)
     #print("type of data: ", type(data))
-    return pd.read_json(data, dtype=cols)
+    return df
 
     #return enrollment_df.to_sql("enrollment")
     #with open('../data/enrollment.csv', 'w') as writer:
