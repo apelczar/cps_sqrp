@@ -7,6 +7,7 @@ from .forms import SQRPModelConfigForm
 import sys
 sys.path.append('..')
 from core import analyzesqrp
+import json
 
 LABEL_DICT = {
     "Five Essentials Survey": "five_essentials_survey",
@@ -32,19 +33,24 @@ def home(request):
     if request.method == "POST":
         try:
             processed = process_user_input(request.POST)
-            results = analyzesqrp.process_sqrp(processed)
+            (schools, bias_score) = analyzesqrp.calculate_sqrp_scores(processed)
         except Exception as e:
             print('Exception caught', e)
 
         form = SQRPModelConfigForm(request.POST)
     else:
         form = SQRPModelConfigForm()
-        results = []
+        schools = []
+        bias_score = None
+
+    if schools:
+        schools = json.dumps(schools)
     
     return render(request, 'home.html', context=
     {
         'form': form,
-        'results': results
+        'schools': [],
+        'bias_score': bias_score
     })
 
 

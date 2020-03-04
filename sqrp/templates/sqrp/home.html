@@ -35,7 +35,7 @@
         <div class="nav-wrapper">
           <a href="#" class="brand-logo">SQRP Playground</a>
           <ul id="navComponents" class="right hide-on-med-and-down">
-            <li><a href=# class="right hide-on-med-and-down">Allison Apeczar, Lily Grier, Launa Greer</a></li>
+            <li><a href=# class="right hide-on-med-and-down">Alison Pelczar, Lily Grier, Launa Greer</a></li>
           </ul>
         </div>
     </nav>
@@ -147,7 +147,8 @@
                 </form>
               </div>
               <div id="results">
-                {% for school in results %}
+                {% if schools %}
+                {% for school in schools %}
                 <div class="card horizontal">
                   <div class="card-image">
                     <img src="https://www.voicesofyouth.org/sites/default/files/images/2019-03/school.jpg">
@@ -155,9 +156,12 @@
                   <div class="card-stacked">
                     <div class="card-content">
                       <p style="font-weight: bold;">{{school.name}}</p>
-                      <p>{{school.street_address}}</p>
-                      <p>{{school.city}}, {{school.state}} {{school.zip_code}}</p>
-                      <p>{{school.phone_number}}</p>
+                      <p>2018-19 CPS Rating: {{school.cps_rating}}</p>
+                      <p>SQRP Rating: {{school.sqrp_rating}}</p>
+                      <p>SQRP Points: {{school.sqrp_points}}</p>
+                      <p>STREET ADDRESS</p>
+                      <p>CITY, STATE ZIPCODE</p>
+                      <p>PHONE NUMBER</p>
                     </div>
                     <div class="card-action">
                       <a href="#">Link</a>
@@ -165,16 +169,17 @@
                   </div>
                 </div>
                 {% endfor %}
+                {% endif %}
               </div>
               <div id="biasScore">
-                <p>Content Here</p>
+                <p>{{bias_score}}</p>
               </div>
             </div>
         </div>
     </div>
     <script src="{% static 'js/materialize.min.js' %}" type="text/javascript"></script>
-      {% if results %}
-      {{ results|json_script:"markerSource" }}
+      {% if schools %}
+      {{ schools|json_script:"markerSource" }}
       {% endif %}
     <script id="map">
       // Initialize map
@@ -195,7 +200,7 @@
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [school.longitude, school.latitude]
+            coordinates: [school.location[1], school.location[0]]
           },
           properties: {
             title: school.name,
