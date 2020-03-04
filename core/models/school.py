@@ -33,7 +33,10 @@ BASE_INDICATOR_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
                        "college_enrollment_rate": 0,
                        "college_persistence_rate": 0,
                        "five_essentials_survey": 0,
-                       "data_quality_index_score": 0
+                       "data_quality_index_score": 0,
+                       "attainment_psat_grade_9_school": 0,
+                       "attainment_psat_grade_10": 0,
+                       "attainment_psat_grade_11_school": 0
 }
 
 
@@ -137,6 +140,26 @@ def calculate_ind_points(school, indicators, indicator,
         school.weights[indicator] = 0
     return 0
 
+def calculate_add_input_weight(school, indicators, policy):
+    '''
+    Calculates weight for additional inputs (attainment scores)
+
+    Inputs:
+        weight: (float) the numerical weight for college readiness
+        indicators: (dict)
+        policy: an SQRP object
+
+    Returns:
+        None
+    '''
+
+    for item in ATTAINMENT_INDICATORS:
+        item_weight = policy.relative_weights[indicator] * policy.base_weight
+        if indicators[item]: # if item is not missing
+            school.weights[indicator] = item_weight
+        else:
+            reassign_weight_proportional(school, item_weight, indicators, 
+                                         policy, ATTAINMENT_INDICATORS)
 
 def reassign_weight_proportional(school, weight, indicators, policy,
                                  to_reassign=NON_ASSESSMENT_REASSIGNMENT[1:]):
