@@ -175,6 +175,12 @@ def reassign_persistence_weight(school, weight, indicators, policy):
     school.weights["college_enrollment_rate"] = (
             school.weights["college_enrollment_rate"] + weight)
 
+def reassign_additional_input_weight(school, weight, indicators, policy):
+    '''
+    Reassigns weight from additional inputs not in base model
+    '''
+
+    return None
 
 def reassign_enrollment_weight(school, weight, indicators, policy):
     '''
