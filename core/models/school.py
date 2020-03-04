@@ -48,7 +48,9 @@ PRIORITY_GROUP_INDICATORS = ["aa_sat_growth",
                              "el_sat_growth",
                              "hispanic_sat_growth"]
 
-
+ATTAINMENT_INDICATORS = ["attainment_psat_grade_9_school",
+                        "attainment_psat_grade_10",
+                        "attainment_psat_grade_11_school"]
 
 def calculate_points(school, indicators, policy):
     '''
