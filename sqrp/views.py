@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
 from .forms import SQRPConfigForm
+from .forms import SQRPModelConfigForm
 
 import sys
 sys.path.append('..')
@@ -31,15 +32,20 @@ def home(request):
     if request.method == "POST":
         try:
             processed = process_user_input(request.POST)
-            analyzesqrp.process_sqrp(processed)
+            results = analyzesqrp.process_sqrp(processed)
         except Exception as e:
             print('Exception caught', e)
 
-        form = SQRPConfigForm(LABEL_DICT, request.POST)
+        form = SQRPModelConfigForm(request.POST)
     else:
-        form = SQRPConfigForm(LABEL_DICT)
+        form = SQRPModelConfigForm()
+        results = []
     
-    return render(request, 'home.html', context={'form': form })
+    return render(request, 'home.html', context=
+    {
+        'form': form,
+        'results': results
+    })
 
 
 def process_user_input(query_dict):
