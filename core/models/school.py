@@ -6,14 +6,15 @@
 
 from decimal import Decimal, ROUND_HALF_UP
 
-import sqlite3
-conn = sqlite3.connect("../../db.sqlite3")
-conn.row_factory = sqlite3.Row
-cursor = conn.cursor()
-cursor.execute('''SELECT * FROM sqrp JOIN location ON
-                  sqrp.school_id = location.school_id;''')
-rows = cursor.fetchall()
-schools = [dict(r) for r in rows]
+
+#import sqlite3
+#conn = sqlite3.connect("../../db.sqlite3")
+#conn.row_factory = sqlite3.Row
+#cursor = conn.cursor()
+#cursor.execute('''SELECT * FROM sqrp JOIN location ON
+#                  sqrp.school_id = location.school_id;''')
+#rows = cursor.fetchall()
+#schools = [dict(r) for r in rows]
 
 
 BASE_INDICATOR_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
@@ -135,7 +136,8 @@ def calculate_ind_points(school, indicators, indicator,
     return 0
 
 
-def reassign_readiness_weight(school, weight, indicators, policy):
+def reassign_weight_proportional(school, weight, indicators, policy,
+                                 to_reassign=NON_ASSESSMENT_REASSIGNMENT[1:]):
     '''
     Reassigns weight from the college readiness indicator.
 
@@ -149,12 +151,14 @@ def reassign_readiness_weight(school, weight, indicators, policy):
     '''
 
     usable_indicators = []
-    for indicator, fun in NON_ASSESSMENT_REASSIGNMENT[1:]:
+    rel_weight_total = 0
+    for indicator, fun in to_reassign:
         if indicators[indicator] and policy.relative_weights[indicator]:
             usable_indicators.append(indicator)
+            rel_weight_total += policy.relative_weights[indicator]
     if not usable_indicators:
         return
-    reassigned_wt = weight / len(usable_indicators)
+    reassigned_wt = weight / rel_weight_total
     for indicator in usable_indicators:
         school.weights[indicator] = school.weights[indicator] + reassigned_wt
 
@@ -364,7 +368,7 @@ def calculate_growth_weights(school, indicators, policy):
 
 
 NON_ASSESSMENT_REASSIGNMENT = [
-        ("percent_students_college_ready", reassign_readiness_weight),
+        ("percent_students_college_ready", reassign_weight_proportional),
         ("college_persistence_rate", reassign_persistence_weight),
         ("college_enrollment_rate", reassign_enrollment_weight),
         ("four_year_cohort_graduation_rate", reassign_graduation_weight),
@@ -394,7 +398,8 @@ class School():
 
         self.name = record["school_name"]
         self.id = record["school_id"]
-        self.location = (record["school_latitude"], record["school_longitude"])
+        self.latitude = record["school_latitude"]
+        self.longitude = record["school_longitude"]
         self.cps_rating = record["current_sqrp_rating"]
         self.weights = BASE_INDICATOR_DICT.copy()
         points = calculate_points(self, record, policy)
