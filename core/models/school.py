@@ -79,12 +79,13 @@ def calculate_points(school, indicators, policy):
     if policy.priority_group_sat_growth > 0:
         total_points += calculate_priority_group_points(school, indicators,
                                                         policy)
-    
     #Calculate and reassign weights as needed
     calculate_growth_weights(school, indicators, policy)
+
+    calculate_add_input_weight(school, indicators, policy)
     
     #Use the weights to calculate scores
-    for measure in ASSESSMENT_INDICATORS:
+    for measure in ASSESSMENT_INDICATORS + ATTAINMENT_INDICATORS:
         if indicators[measure]:
             total_points += school.weights[measure] * indicators[measure]
 
@@ -356,7 +357,6 @@ def calculate_growth_weights(school, indicators, policy):
         policy.relative_weights[indicator] * policy.base_weight)
 
     grade_level_growth_count = 0
-    grade_level_growth_weight = 0
     weight_to_reassign = 0
     for measure in ASSESSMENT_INDICATORS[1:]:
         if policy.relative_weights[measure] and indicators[measure]:

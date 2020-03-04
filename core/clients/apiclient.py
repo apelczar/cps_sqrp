@@ -12,7 +12,7 @@ enrollment_vars = ["school_id",
                    "student_count_special_ed", 
                    "student_count_english_learners"]
 
-enrollment_cols = {"school_id": str, 
+enrollment_cols = {"school_id": str,
                    "student_count_total": int,
                    "student_count_low_income": int, 
                    "student_count_special_ed": int,
@@ -74,7 +74,8 @@ def get_attainment_data():
     #print("df looks like: ", df)
     return df
 
-def attainment_to_percentile(attainment_df):
+def percentile_to_points(attainment_df):
+
     return None
 
 
