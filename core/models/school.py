@@ -23,7 +23,10 @@ BASE_INDICATOR_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
                        "college_enrollment_rate": 0,
                        "college_persistence_rate": 0,
                        "five_essentials_survey": 0,
-                       "data_quality_index_score": 0
+                       "data_quality_index_score": 0,
+                       "attainment_psat_grade_9_school": 0,
+                       "attainment_psat_grade_10": 0,
+                       "attainment_psat_grade_11_school": 0
 }
 
 
@@ -39,7 +42,9 @@ PRIORITY_GROUP_INDICATORS = ["aa_sat_growth",
                              "el_sat_growth",
                              "hispanic_sat_growth"]
 
-
+ATTAINMENT_INDICATORS = ["attainment_psat_grade_9_school",
+                        "attainment_psat_grade_10",
+                        "attainment_psat_grade_11_school"]
 
 def calculate_points(school, indicators, policy):
     '''
@@ -64,12 +69,13 @@ def calculate_points(school, indicators, policy):
     if policy.priority_group_sat_growth > 0:
         total_points += calculate_priority_group_points(school, indicators,
                                                         policy)
-    
     #Calculate and reassign weights as needed
     calculate_growth_weights(school, indicators, policy)
+
+    calculate_add_input_weight(school, indicators, policy)
     
     #Use the weights to calculate scores
-    for measure in ASSESSMENT_INDICATORS:
+    for measure in ASSESSMENT_INDICATORS + ATTAINMENT_INDICATORS:
         if indicators[measure]:
             total_points += school.weights[measure] * indicators[measure]
 
@@ -125,8 +131,29 @@ def calculate_ind_points(school, indicators, indicator,
         school.weights[indicator] = 0
     return 0
 
+def calculate_add_input_weight(school, indicators, policy):
+    '''
+    Calculates weight for additional inputs (attainment scores)
 
-def reassign_readiness_weight(school, weight, indicators, policy):
+    Inputs:
+        weight: (float) the numerical weight for college readiness
+        indicators: (dict)
+        policy: an SQRP object
+
+    Returns:
+        None
+    '''
+
+    for item in ATTAINMENT_INDICATORS:
+        item_weight = policy.relative_weights[indicator] * policy.base_weight
+        if indicators[item]: # if item is not missing
+            school.weights[indicator] = item_weight
+        else:
+            reassign_weight_proportional(school, item_weight, indicators, 
+                                         policy, ATTAINMENT_INDICATORS)
+
+def reassign_weight_proportional(school, weight, indicators, policy,
+                                 to_reassign=NON_ASSESSMENT_REASSIGNMENT[1:]):
     '''
     Reassigns weight from the college readiness indicator.
 
@@ -140,12 +167,14 @@ def reassign_readiness_weight(school, weight, indicators, policy):
     '''
 
     usable_indicators = []
-    for indicator, fun in NON_ASSESSMENT_REASSIGNMENT[1:]:
+    rel_weight_total = 0
+    for indicator, fun in to_reassign:
         if indicators[indicator] and policy.relative_weights[indicator]:
             usable_indicators.append(indicator)
+            rel_weight_total += policy.relative_weights[indicator]
     if not usable_indicators:
         return
-    reassigned_wt = weight / len(usable_indicators)
+    reassigned_wt = weight / rel_weight_total
     for indicator in usable_indicators:
         school.weights[indicator] = school.weights[indicator] + reassigned_wt
 
@@ -318,7 +347,6 @@ def calculate_growth_weights(school, indicators, policy):
         policy.relative_weights[indicator] * policy.base_weight)
 
     grade_level_growth_count = 0
-    grade_level_growth_weight = 0
     weight_to_reassign = 0
     for measure in ASSESSMENT_INDICATORS[1:]:
         if policy.relative_weights[measure] and indicators[measure]:
@@ -355,7 +383,7 @@ def calculate_growth_weights(school, indicators, policy):
 
 
 NON_ASSESSMENT_REASSIGNMENT = [
-        ("percent_students_college_ready", reassign_readiness_weight),
+        ("percent_students_college_ready", reassign_weight_proportional),
         ("college_persistence_rate", reassign_persistence_weight),
         ("college_enrollment_rate", reassign_enrollment_weight),
         ("four_year_cohort_graduation_rate", reassign_graduation_weight),
@@ -385,7 +413,8 @@ class School():
 
         self.name = record["school_name"]
         self.id = record["school_id"]
-        self.location = (record["school_latitude"], record["school_longitude"])
+        self.latitude = record["school_latitude"]
+        self.longitude = record["school_longitude"]
         self.cps_rating = record["current_sqrp_rating"]
         self.weights = BASE_INDICATOR_DICT.copy()
         points = calculate_points(self, record, policy)
