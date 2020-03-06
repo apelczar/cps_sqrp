@@ -44,7 +44,7 @@ CREATE TABLE sqrp
 		hispanic_sat_growth decimal,
 		el_sat_growth decimal,
 		dl_sat_growth decimal,
-		current_sqrp_points decimal,
+		current_sqrp_rating decimal,
 		constraint pk_sqrp primary key (school_id)
 );
 
