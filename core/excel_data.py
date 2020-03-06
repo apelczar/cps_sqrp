@@ -9,7 +9,7 @@ filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 def import_to_database(): # NEED TO MAKE DATABASE A PARAM IF I WANT TO IMPORT FUNCTION FROM APICLIENT
     df = make_final_df()
     #print("final_df looks like: ", df)
-    con = sqlite3.connect("../db.sqlite3")
+    con = sqlite3.connect("../db.sqlite3") # make sure this accesses database
     u = con.cursor()
     df.to_sql('sqrp', con=con, index=False, if_exists='append')
     return None
@@ -112,8 +112,8 @@ def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
     "SAT11 African-American Cohort Growth Percentile": "aa_sat_growth",
     "SAT11 Hispanic Cohort Growth Percentile": "hispanic_sat_growth",
     "SAT11 English Learner Cohort Growth Percentile": "el_sat_growth",
-    "SAT11 Diverse Learner Cohort Growth Percentile": "dl_sat_growth",
-    "SY 2018-2019 SQRP Rating": "current_sqrp_rating"
+    "SAT11 Diverse Learner Cohort Growth Percentile": "dl_sat_growth"
+    #"SY 2018-2019 SQRP Rating": "current_sqrp_points"
     }
 
     if sheet_name == 2:
