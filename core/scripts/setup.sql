@@ -24,6 +24,7 @@ CREATE TABLE location
 CREATE TABLE sqrp
 	(school_id varchar(10),
 		school_name varchar(50),
+		grade_11_sat_3yr_cohort_growth decimal,
 		grade_11_sat_growth_ebrw decimal,
 		grade_11_sat_growth_math decimal,
 		grade_10_psat_annual_growth_ebrw decimal,
@@ -43,6 +44,7 @@ CREATE TABLE sqrp
 		hispanic_sat_growth decimal,
 		el_sat_growth decimal,
 		dl_sat_growth decimal,
+		current_sqrp_rating decimal,
 		constraint pk_sqrp primary key (school_id)
 );
 

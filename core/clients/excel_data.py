@@ -9,7 +9,7 @@ filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 def import_to_database(): # NEED TO MAKE DATABASE A PARAM IF I WANT TO IMPORT FUNCTION FROM APICLIENT
     df = make_final_df()
     #print("final_df looks like: ", df)
-    con = sqlite3.connect("../db.sqlite3")
+    con = sqlite3.connect("../db.sqlite3") # make sure this accesses database
     u = con.cursor()
     df.to_sql('sqrp', con=con, index=False, if_exists='append')
     return None
@@ -69,6 +69,7 @@ def initial_clean(hs_data, sheet_name): # JUST ADDED SHEET_NAME VAR
         col_clean = re.sub(r": Points", "", col_clean)
         #re.sub(r'\s+', " ", col)
         clean_names[col] = col_clean
+    #print("clean_names columns", clean_names.keys())
     return clean_names
 
 def pare_df(hs_data, sheet_name):
@@ -115,13 +116,16 @@ def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
     "SAT11 Diverse Learner Cohort Growth Percentile": "dl_sat_growth",
     "SY 2018-2019 SQRP Rating": "current_sqrp_rating"
     }
+    print("pared_df cols before renaming: ", pared_df.columns)
 
-    if sheet_name == 2:
-        var_names["SQRP Total Points Earned"] = "current_sqrp_points"
+    #if sheet_name == 2:
+        #var_names["SQRP Total Points Earned"] = "current_sqrp_points"
+        #var_names['SY 2018-2019 SQRP Rating: Unnamed: 8_level_1'] = "current_sqrp_points"
     
-    if sheet_name == 3:
-        var_names["High School SQRP Points Earned"] = "current_sqrp_points"
-    
+    #if sheet_name == 3:
+        #var_names['High School SQRP Points Earned: Unnamed: 5_level_1'] = "current_sqrp_points"
+    #'High School SQRP Points Earned: Unnamed: 5_level_1'
+    print("var_names looks like: ", var_names)
 
     pared_df = pared_df[list(var_names.keys())] # remove extraneous variables
     final_df = pared_df.rename(columns=var_names)

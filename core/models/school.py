@@ -71,13 +71,13 @@ def calculate_points(school, indicators, policy):
                                                         policy)
     #Calculate and reassign weights as needed
     calculate_growth_weights(school, indicators, policy)
-
-    calculate_add_input_weight(school, indicators, policy)
     
     #Use the weights to calculate scores
-    for measure in ASSESSMENT_INDICATORS + ATTAINMENT_INDICATORS:
+    for measure in ASSESSMENT_INDICATORS:
         if indicators[measure]:
             total_points += school.weights[measure] * indicators[measure]
+
+    total_points += calculate_add_input_points(school, indicators, policy)
 
     #Check that all weight has been reassigned
     #If it hasn't inflate currently calculated points according to their
@@ -131,29 +131,8 @@ def calculate_ind_points(school, indicators, indicator,
         school.weights[indicator] = 0
     return 0
 
-def calculate_add_input_weight(school, indicators, policy):
-    '''
-    Calculates weight for additional inputs (attainment scores)
 
-    Inputs:
-        weight: (float) the numerical weight for college readiness
-        indicators: (dict)
-        policy: an SQRP object
-
-    Returns:
-        None
-    '''
-
-    for item in ATTAINMENT_INDICATORS:
-        item_weight = policy.relative_weights[indicator] * policy.base_weight
-        if indicators[item]: # if item is not missing
-            school.weights[indicator] = item_weight
-        else:
-            reassign_weight_proportional(school, item_weight, indicators, 
-                                         policy, ATTAINMENT_INDICATORS)
-
-def reassign_weight_proportional(school, weight, indicators, policy,
-                                 to_reassign=NON_ASSESSMENT_REASSIGNMENT[1:]):
+def reassign_readiness_weight(school, weight, indicators, policy):
     '''
     Reassigns weight from the college readiness indicator.
 
@@ -168,7 +147,7 @@ def reassign_weight_proportional(school, weight, indicators, policy,
 
     usable_indicators = []
     rel_weight_total = 0
-    for indicator, fun in to_reassign:
+    for indicator, fun in NON_ASSESSMENT_REASSIGNMENT[1:]:
         if indicators[indicator] and policy.relative_weights[indicator]:
             usable_indicators.append(indicator)
             rel_weight_total += policy.relative_weights[indicator]
@@ -195,12 +174,6 @@ def reassign_persistence_weight(school, weight, indicators, policy):
     school.weights["college_enrollment_rate"] = (
             school.weights["college_enrollment_rate"] + weight)
 
-def reassign_additional_input_weight(school, weight, indicators, policy):
-    '''
-    Reassigns weight from additional inputs not in base model
-    '''
-
-    return None
 
 def reassign_enrollment_weight(school, weight, indicators, policy):
     '''
@@ -381,9 +354,43 @@ def calculate_growth_weights(school, indicators, policy):
         if policy.relative_weights[measure] and indicators[measure]:
             school.weights[measure] = school.weights[measure] + reassigned_weight
 
+def calculate_add_input_points(school, indicators, policy):
+    '''
+    Calculates weight for additional inputs (attainment scores)
+
+    Inputs:
+        indicators: (dict)
+        policy: an SQRP object
+
+    Returns:
+        the points for all additional inputs
+    '''
+
+    points = 0
+    weight_to_reassign = 0
+    rel_weight_total = 0
+    for item in ATTAINMENT_INDICATORS:
+        item_weight = policy.relative_weights[item] * policy.base_weight
+        if not indicators[item]:
+            weight_to_reassign += item_weight
+        else:
+            rel_weight_total += policy.relative_weights[item]
+            school.weights[item] = item_weight
+
+    if not rel_weight_total:
+        return points
+
+    reassigned_weight = weight_to_reassign / rel_weight_total
+
+    for item in ATTAINMENT_INDICATORS:
+        if indicators[item] and school.weights[item]:
+            school.weights[item] = school.weights[item] + reassigned_weight
+            points += indicators[item] * school.weights[item]
+    return points
+
 
 NON_ASSESSMENT_REASSIGNMENT = [
-        ("percent_students_college_ready", reassign_weight_proportional),
+        ("percent_students_college_ready", reassign_readiness_weight),
         ("college_persistence_rate", reassign_persistence_weight),
         ("college_enrollment_rate", reassign_enrollment_weight),
         ("four_year_cohort_graduation_rate", reassign_graduation_weight),

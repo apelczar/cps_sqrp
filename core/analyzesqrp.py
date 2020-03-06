@@ -30,11 +30,13 @@ def calculate_sqrp_scores(user_input):
     school_records, enrollment = get_records()
     school_lst = []
     enrollment["sqrp_points"] = 0
+    enrollment["rating"] = "Inability to Rate"
     for record in school_records:
         s_obj = School(record, policy)
         school_lst.append(s_obj)
         if s_obj.sqrp_rating != "Inability to Rate":
-            enrollment.loc[str(s_obj.id)]["sqrp_points"] = s_obj.sqrp_points
+            enrollment.loc[str(s_obj.id), "sqrp_points"] = s_obj.sqrp_points
+            enrollment.loc[str(s_obj.id), "rating"] = s_obj.sqrp_rating
     bias_score = bs.calculate_bias_score(enrollment)
     return school_lst, bias_score
 
