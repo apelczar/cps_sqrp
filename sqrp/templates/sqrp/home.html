@@ -61,19 +61,19 @@
                         {{ form.grade_9_psat_cohort_growth }}
                       </p>
                       <p class="range-field">
-                        {{ form.grade_10_psat_cohort_growth_ebrw.label_tag }}
-                        {{ form.grade_10_psat_cohort_growth_ebrw }}
+                        {{ form.grade_10_psat_annual_growth_ebrw.label_tag }}
+                        {{ form.grade_10_psat_annual_growth_ebrw }}
                       </p>
                       <p class="range-field">
-                        {{ form.grade_10_psat_cohort_growth_math.label_tag }}
-                        {{ form.grade_10_psat_cohort_growth_math }}
+                        {{ form.grade_10_psat_annual_growth_math.label_tag }}
+                        {{ form.grade_10_psat_annual_growth_math }}
                       </p>
                     </div>
                     <div id="SATInputs" class="col s4">
                       <h6>SAT</h6>
                       <p class="range-field">
-                        {{ form.grade_11_sat_3_year_cohort_growth.label_tag }}
-                        {{ form.grade_11_sat_3_year_cohort_growth }}
+                        {{ form.grade_11_sat_3yr_cohort_growth.label_tag }}
+                        {{ form.grade_11_sat_3yr_cohort_growth }}
                       </p>
                       <p class="range-field">
                         {{ form.grade_11_sat_growth_ebrw.label_tag }}
@@ -91,12 +91,12 @@
                     <div id="RetentionInputs" class="col s4">
                       <h6>Retention</h6>
                       <p class="range-field">
-                        {{ form.average_daily_attendance_rate.label_tag }}
-                        {{ form.average_daily_attendance_rate }}
+                        {{ form.avg_daily_attendance_rate.label_tag }}
+                        {{ form.avg_daily_attendance_rate }}
                       </p>
                       <p class="range-field">
-                        {{ form.freshmen_on_track_to_graduate.label_tag }}
-                        {{ form.freshmen_on_track_to_graduate }}
+                        {{ form.freshmen_on_track_rate.label_tag }}
+                        {{ form.freshmen_on_track_rate }}
                       </p>
                       <p class="range-field">
                         {{ form.four_year_cohort_graduation_rate.label_tag }}
@@ -112,8 +112,8 @@
                     <div id="CollegePrepInputs" class="col s4">
                       <h6>College Preparation</h6>
                       <p class="range-field">
-                        {{ form.percent_college_ready_students.label_tag }}
-                        {{ form.percent_college_ready_students }}
+                        {{ form.percent_students_college_ready.label_tag }}
+                        {{ form.percent_students_college_ready }}
                       </p>
                       <p class="range-field">
                         {{ form.percent_graduating_with_creds.label_tag }}
@@ -133,6 +133,18 @@
                     </div>
                     <div id="OtherInputs" class="col s4">
                       <h6>Other</h6>
+                      <p class="range-field">
+                        {{ form.attainment_psat_grade_9_school.label_tag }}
+                        {{ form.attainment_psat_grade_9_school }}
+                      </p>
+                      <p class="range-field">
+                        {{ form.attainment_psat_grade_10.label_tag }}
+                        {{ form.attainment_psat_grade_10 }}
+                      </p>
+                      <p class="range-field">
+                        {{ form.attainment_psat_grade_11_school.label_tag }}
+                        {{ form.attainment_psat_grade_11_school }}
+                      </p>
                       <p class="range-field">
                         {{ form.five_essentials_survey.label_tag }}
                         {{ form.five_essentials_survey }}

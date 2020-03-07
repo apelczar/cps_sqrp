@@ -52,7 +52,7 @@ def get_records():
         a list of dictionaries, where each dictionary represents a school
     '''
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = "{}\db.sqlite3".format(root)
+    path = "{}\\db.sqlite3".format(root)
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
