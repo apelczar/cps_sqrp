@@ -6,47 +6,38 @@
 # Schools (CPS) by assigning rating and attainment scores for each high school
 # in the district and then generating a bias score for the SQRP as a whole.
 
+import os
+import json
 import sqlite3
-import bias_score
-from models import school, sqrp
 import pandas as pd
-#import school
-#import sqrp
+from core.models import bias_score as bs
+from core.models.sqrp import SQRP
+from core.models.school import School
 
-def process_sqrp(user_input):
-    print("processing user input")
-    for k, v in user_input.items():
-        print(k, ":", v)
-
-def main():
-    '''
-    The point of entry for the program.
-    '''
-    print("test main")
-
-def calculate_sqrp_scores(policy):
+def calculate_sqrp_scores(user_input):
     '''
     Calculate the SQRP scores and the bias score of a policy.
 
     Inputs:
-        SQRP object
+        user_input (dict<str, float>): a dictionary with indicator names as keys
+            and relative weights as values
 
     Returns:
         school_lst: a list of School objects
         bias_score: an integer, 0-100
     '''
-
+    policy = SQRP(user_input)
     school_records, enrollment = get_records()
     school_lst = []
     enrollment["sqrp_points"] = 0
     enrollment["rating"] = "Inability to Rate"
     for record in school_records:
-        s_obj = school.School(record, policy)
+        s_obj = School(record, policy)
         school_lst.append(s_obj)
         if s_obj.sqrp_rating != "Inability to Rate":
             enrollment.loc[str(s_obj.id), "sqrp_points"] = s_obj.sqrp_points
             enrollment.loc[str(s_obj.id), "rating"] = s_obj.sqrp_rating
-    bias_score = bias_score.calculate_bias_score(enrollment)
+    bias_score = bs.calculate_bias_score(enrollment)
     return school_lst, bias_score
 
 
@@ -60,8 +51,9 @@ def get_records():
     Returns:
         a list of dictionaries, where each dictionary represents a school
     '''
-
-    conn = sqlite3.connect("../db.sqlite3")
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path = "{}\\db.sqlite3".format(root)
+    conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM sqrp JOIN location ON
@@ -72,6 +64,3 @@ def get_records():
                                    conn, index_col="school_id")
     conn.close()
     return schools, enrollment
-
-if __name__ == '__main__':
-    main()
