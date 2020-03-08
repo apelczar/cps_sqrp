@@ -87,7 +87,7 @@ def calculate_points(school, indicators, policy):
         if indicators[measure]:
             total_points += school.weights[measure] * indicators[measure]
 
-    total_points += calculate_add_input_points(school, indicators, policy)
+    #total_points += calculate_add_input_points(school, indicators, policy)
 
     #Check that all weight has been reassigned
     #If it hasn't inflate currently calculated points according to their
