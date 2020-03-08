@@ -5,8 +5,8 @@
 ###############
 import os
 from decimal import Decimal, ROUND_HALF_UP
-from core.models.indicators import BASE_INDICATOR_DICT
-from core.models.point_calculator import calculate_points
+from models.indicators import BASE_INDICATOR_DICT
+from models.point_calculator import PointCalculator
 
 
 class School():
@@ -30,7 +30,7 @@ class School():
         self.longitude = record["school_longitude"]
         self.cps_rating = record["current_sqrp_rating"]
         self.weights = BASE_INDICATOR_DICT.copy()
-        points = calculate_points(self, record, policy)
+        points = PointCalculator(self, record, policy).points
         self.sqrp_points = float(Decimal(str(points)).quantize(Decimal("0.1"),
                                  rounding=ROUND_HALF_UP))
         self.sqrp_rating = self.assign_rating(self.sqrp_points)

@@ -1,13 +1,14 @@
 '''
 reassignments.py
 '''
-from core.models.indicators import ASSESSMENT_INDICATORS
+from models.indicators import ASSESSMENT_INDICATORS
 
 def reassign_readiness_weight(school, weight, indicators, policy):
     '''
     Reassigns weight from the college readiness indicator.
 
     Inputs:
+        school: a school object
         weight: (float) the numerical weight for college readiness
         indicators: (dict)
         policy: an SQRP object
@@ -34,6 +35,7 @@ def reassign_persistence_weight(school, weight, indicators, policy):
     Reassigns weight from the college persistence indicator.
 
     Inputs:
+        school: a school object
         weight: (float) the numerical weight for college persistence
         indicators: (dict)
         policy: an SQRP object
@@ -51,6 +53,7 @@ def reassign_enrollment_weight(school, weight, indicators, policy):
     Reassigns weight from the college enrollment indicator.
 
     Inputs:
+        school: a school object
         weight: (float) the numerical weight for college enrollment
         indicators: (dict)
         policy: an SQRP object
@@ -68,6 +71,7 @@ def reassign_graduation_weight(school, weight, indicators, policy):
     Reassigns weight from the graduation rate indicator.
 
     Inputs:
+        school: a school object
         weight: (float) the numerical weight for graduation rate
         indicators: (dict)
         policy: an SQRP object
@@ -89,6 +93,7 @@ def reassign_on_track_weight(school, weight, indicators, policy):
     Reassigns weight from the freshman on track indicator.
 
     Inputs:
+        school: a school object
         weight: (float) the numerical weight for freshman on track
         indicators: (dict)
         policy: an SQRP object
@@ -111,8 +116,8 @@ def reassign_to_growth(school, weight, indicators, policy):
     data for that indicator.
 
     Inputs:
-        weight: the numerical weight for the category to be
-                redistributed
+        school: a school object
+        weight: the numerical weight for the category to be redistributed
         indicators: (dict) the record for the school
         policy: an SQRP object
 
