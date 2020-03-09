@@ -6,20 +6,6 @@ CREATE TABLE enrollment
 	constraint pk_enrollment primary key (school_id)
 );
 
-CREATE TABLE attainment
-	(school_id varchar(10),
-		attainment_psat_grade_9_school decimal,
-		attainment_psat_grade_10 decimal,
-		attainment_sat_grade_11 decimal,
-		contraint pk_attainment primary key (school_id)
-);
-
-CREATE TABLE location
-	(school_id varchar(10),
-		school_latitude decimal,
-		school_longitude decimal,
-		constraint pk_location primary key (school_id)
-);
 
 CREATE TABLE sqrp
 	(school_id varchar(10),
@@ -45,6 +31,11 @@ CREATE TABLE sqrp
 		el_sat_growth decimal,
 		dl_sat_growth decimal,
 		current_sqrp_rating decimal,
+		school_latitude, decimal,
+		school_longitude, decimal,
+		attainment_psat_grade_9_school decimal,
+		attainment_psat_grade_10 decimal,
+		attainment_sat_grade_11 decimal,
 		constraint pk_sqrp primary key (school_id)
 );
 
