@@ -31,11 +31,11 @@ CREATE TABLE sqrp
 		el_sat_growth decimal,
 		dl_sat_growth decimal,
 		current_sqrp_rating decimal,
-		school_latitude, decimal,
-		school_longitude, decimal,
+		school_latitude decimal,
+		school_longitude decimal,
 		attainment_psat_grade_9_school decimal,
 		attainment_psat_grade_10 decimal,
-		attainment_sat_grade_11 decimal,
+		attainment_sat_grade_11_school decimal,
 		constraint pk_sqrp primary key (school_id)
 );
 

@@ -23,23 +23,30 @@ def get_progress_report_data():
     location. Returns a Pandas dataframe.
     '''
     progress_vars = ["school_id",
-                   "attainment_psat_grade_9_school",
-                   "attainment_psat_grade_10",
-                   "attainment_sat_grade_11_school",
                    "school_latitude",
                    "school_longitude"]
+    
+    attainment_vars = ["attainment_psat_grade_9_school",
+                       "attainment_psat_grade_10",
+                       "attainment_sat_grade_11_school"]
 
     progress_cols = {"attainment_psat_grade_9_school": float,
                    "attainment_psat_grade_10": float,
                    "attainment_sat_grade_11": float,
                    "school_latitude": float,
                    "school_longitude": float}
-    df = get_data(PROGRESS_REPORT_URL, progress_vars, progress_cols)
+    df = get_data(PROGRESS_REPORT_URL, progress_vars + attainment_vars, 
+                  progress_cols)
     bins = pd.IntervalIndex.from_tuples([(0, 10), (10, 40), (40, 70), 
         (70, 90), (90, 101)], closed="left")
     labs = [1, 2, 3, 4, 5]
-    for var in progress_vars:
-        df[var] = pd.cut(df[var], bins=bins, labels=[1, 2, 3, 4, 5])
+    for var in attainment_vars:
+        x = pd.cut(df[var].to_list(), bins=bins)
+        x.categories = [1, 2, 3, 4, 5]
+        df[var] = x
+
+
+
         #df[var] = pd.cut(df[var], bins=[0, 10, 40, 70, 90, 101], right=False, 
             #include_lowest=True, labels=labs)
         #df[var] = df[var].categories = [1, 2, 3, 4, 5]

@@ -33,13 +33,7 @@ def setup():
     sqrp_df = sqrp_excel.merge(progress_df, on="school_id", how="inner")
     #print("sqrp looks like: ", sqrp_df.columns)
     insert_into_database(profile_df, 'enrollment')
-    insert_into_database(sqrp_df, 'sqrp') # need to make this joined df
-
-
-def set_up_db():
-    put_df_in_database(get_enrollment_data(), 'enrollment')
-    put_df_in_database(get_location_data(), 'location')
-    put_df_in_database(get_attainment_data(), 'attainment')
+    insert_into_database(sqrp_df, 'sqrp')
 
 def insert_into_database(df, table_name):
     '''

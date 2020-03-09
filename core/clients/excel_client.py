@@ -14,7 +14,7 @@ def make_final_df():
     return final_df
 
 def load_and_clean_file(sheet_name):
-    filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
+    #filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
     hs_data = load_data(filename, sheet_name)
     pared_df = pare_df(hs_data, sheet_name)
 
