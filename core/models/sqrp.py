@@ -26,7 +26,7 @@ DEFAULT_RELATIVE_WEIGHTS = {
     "data_quality_index_score": 3,
     "attainment_psat_grade_9_school": 0,
     "attainment_psat_grade_10": 0,
-    "attainment_psat_grade_11_school": 0
+    "attainment_sat_grade_11_school": 0
 }
 
 '''
@@ -260,12 +260,12 @@ class SQRP(object):
         return self.relative_weights.get("attainment_psat_grade_10")
 
     @property
-    def attainment_psat_grade_11_school(self):
+    def attainment_sat_grade_11_school(self):
         '''
         The relative weight for the optional indicator grade 11 PSAT attainment.
         Not currently included in the CPS SQRP system. Defaults to 0.
         '''
-        return self.relative_weights.get("attainment_psat_grade_11_school")
+        return self.relative_weights.get("attainment_sat_grade_11_school")
 
     @property
     def base_weight(self):

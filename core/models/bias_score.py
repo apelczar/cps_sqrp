@@ -60,12 +60,12 @@ def create_plots(df):
     fig, (ax1, ax2, ax3) = plt.subplots(ncols=3, sharey=True)
     sns.regplot(x="percent_low_income", y="sqrp_points", data=df, ci=None,
                 color=colors[0], ax=ax1)
-    ax1.set(xlabel="Percent Low Income", ylabel="SQRP Points", ylim=(0,5))
+    ax1.set(xlabel="Low Income", ylabel="SQRP Points", ylim=(0,5))
     sns.regplot(x="percent_english_learners", y="sqrp_points", data=df, ci=None,
                 color=colors[1], ax=ax2)
-    ax2.set(xlabel="Percent English Learners", ylabel="", ylim=(0,5))
+    ax2.set(xlabel="English Learners", ylabel="", ylim=(0,5))
     sns.regplot(x="percent_special_ed", y="sqrp_points", data=df, ci=None,
                 color=colors[2], ax=ax3)
-    ax3.set(xlabel="Percent Special Education", ylabel="", ylim=(0,5))
+    ax3.set(xlabel="Special Education", ylabel="", ylim=(0,5))
 
-    plt.savefig("../plots/bias_score_viz.svg")
+    plt.savefig("plots/bias_score_viz.svg")

@@ -21,7 +21,7 @@ BASE_INDICATOR_DICT = {"grade_11_sat_3yr_cohort_growth": 0,
                        "data_quality_index_score": 0,
                        "attainment_psat_grade_9_school": 0,
                        "attainment_psat_grade_10": 0,
-                       "attainment_psat_grade_11_school": 0}
+                       "attainment_sat_grade_11_school": 0}
 
 ASSESSMENT_INDICATORS = ["grade_11_sat_3yr_cohort_growth",
                          "grade_11_sat_growth_ebrw",
@@ -37,7 +37,7 @@ PRIORITY_GROUP_INDICATORS = ["aa_sat_growth",
 
 ATTAINMENT_INDICATORS = ["attainment_psat_grade_9_school",
                         "attainment_psat_grade_10",
-                        "attainment_psat_grade_11_school"]
+                        "attainment_sat_grade_11_school"]
 
 INDICATOR_LABEL_DICT = {
     "Five Essentials Survey": "five_essentials_survey",
@@ -59,5 +59,5 @@ INDICATOR_LABEL_DICT = {
     "College Persistence Rate": "college_persistence_rate",
     "Grade 9 PSAT Attainment": "attainment_psat_grade_9_school",
     "Grade 10 PSAT Attainment": "attainment_psat_grade_10",
-    "Grade 11 PSAT Attainment": "attainment_psat_grade_11_school",
+    "Grade 11 SAT Attainment": "attainment_sat_grade_11_school",
 }
