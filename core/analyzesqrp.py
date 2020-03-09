@@ -7,11 +7,9 @@
 # in the district and then generating a bias score for the SQRP as a whole.
 
 import sqlite3
-import bias_score
-from models import school, sqrp
+from models import school, sqrp, bias_score
 import pandas as pd
-#import school
-#import sqrp
+
 
 def process_sqrp(user_input):
     print("processing user input")
@@ -39,15 +37,13 @@ def calculate_sqrp_scores(policy):
     school_records, enrollment = get_records()
     school_lst = []
     enrollment["sqrp_points"] = 0
-    enrollment["rating"] = "Inability to Rate"
     for record in school_records:
         s_obj = school.School(record, policy)
         school_lst.append(s_obj)
         if s_obj.sqrp_rating != "Inability to Rate":
             enrollment.loc[str(s_obj.id), "sqrp_points"] = s_obj.sqrp_points
-            enrollment.loc[str(s_obj.id), "rating"] = s_obj.sqrp_rating
-    bias_score = bias_score.calculate_bias_score(enrollment)
-    return school_lst, bias_score
+    score = bias_score.calculate_bias_score(enrollment)
+    return school_lst, score
 
 
 def get_records():

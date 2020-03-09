@@ -50,3 +50,4 @@ def insert_into_database(df, table_name):
     u = con.cursor()
     df.to_sql(table_name, con=con, index=False, if_exists='append')
     con.close()
+

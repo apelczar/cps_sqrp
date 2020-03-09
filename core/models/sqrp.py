@@ -23,7 +23,10 @@ DEFAULT_RELATIVE_WEIGHTS = {
     "college_enrollment_rate": 3,
     "college_persistence_rate": 3,
     "five_essentials_survey": 3,
-    "data_quality_index_score": 3
+    "data_quality_index_score": 3,
+    "attainment_psat_grade_9_school": 0,
+    "attainment_psat_grade_10": 0,
+    "attainment_psat_grade_11_school": 0
 }
 
 '''
@@ -239,6 +242,30 @@ class SQRP(object):
         quality indicators that are correct in CPS data systems. Defaults to 3.
         '''
         return self.relative_weights.get("data_quality_index_score")
+
+    @property
+    def attainment_psat_grade_9_school(self):
+        '''
+        The relative weight for the optional indicator grade 9 PSAT attainment.
+        Not currently included in the CPS SQRP system. Defaults to 0.
+        '''
+        return self.relative_weights.get("attainment_psat_grade_9_school")
+
+    @property
+    def attainment_psat_grade_10(self):
+        '''
+        The relative weight for the optional indicator grade 10 PSAT attainment.
+        Not currently included in the CPS SQRP system. Defaults to 0.
+        '''
+        return self.relative_weights.get("attainment_psat_grade_10")
+
+    @property
+    def attainment_psat_grade_11_school(self):
+        '''
+        The relative weight for the optional indicator grade 11 PSAT attainment.
+        Not currently included in the CPS SQRP system. Defaults to 0.
+        '''
+        return self.relative_weights.get("attainment_psat_grade_11_school")
 
     @property
     def base_weight(self):

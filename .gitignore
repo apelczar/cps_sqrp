@@ -49,3 +49,9 @@ $RECYCLE.BIN/
 # Local settings file
 settings.json
 launch.json
+
+# Executables
+*.exe
+
+# Cache files
+*.pyc
