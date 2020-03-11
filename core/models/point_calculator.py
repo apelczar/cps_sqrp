@@ -1,8 +1,10 @@
 '''
 point_calculator.py
 '''
-from models.indicators import ATTAINMENT_INDICATORS, ASSESSMENT_INDICATORS, PRIORITY_GROUP_INDICATORS
-from models.reassignments import NON_ASSESSMENT_REASSIGNMENT
+from core.models.reassignments import NON_ASSESSMENT_REASSIGNMENT
+from core.models.indicators import (ATTAINMENT_INDICATORS, 
+                                    ASSESSMENT_INDICATORS,
+                                    PRIORITY_GROUP_INDICATORS)
 
 class PointCalculator():
     def __init__(self, school, record, policy):

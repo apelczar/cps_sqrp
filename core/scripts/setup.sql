@@ -6,7 +6,6 @@ CREATE TABLE enrollment
 	constraint pk_enrollment primary key (school_id)
 );
 
-
 CREATE TABLE sqrp
 	(school_id varchar(10),
 		school_name varchar(50),
@@ -38,6 +37,3 @@ CREATE TABLE sqrp
 		attainment_sat_grade_11_school decimal,
 		constraint pk_sqrp primary key (school_id)
 );
-
-
-

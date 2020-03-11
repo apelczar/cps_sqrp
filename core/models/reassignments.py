@@ -1,7 +1,7 @@
 '''
 reassignments.py
 '''
-from models.indicators import ASSESSMENT_INDICATORS
+from core.models.indicators import ASSESSMENT_INDICATORS
 
 def reassign_readiness_weight(school, weight, indicators, policy):
     '''

@@ -1,12 +1,12 @@
-###############
-#
-# School class for output
-#
-###############
+'''
+school.py
+---------
+Represents a CPS school assigned an SQRP rating.
+'''
 import os
 from decimal import Decimal, ROUND_HALF_UP
-from models.indicators import BASE_INDICATOR_DICT
-from models.point_calculator import PointCalculator
+from core.models.indicators import ALL_INDICATORS
+from core.models.point_calculator import PointCalculator
 
 
 class School():
@@ -29,7 +29,7 @@ class School():
         self.latitude = record["school_latitude"]
         self.longitude = record["school_longitude"]
         self.cps_rating = record["current_sqrp_rating"]
-        self.weights = BASE_INDICATOR_DICT.copy()
+        self.weights = {k:0 for k in ALL_INDICATORS}
         points = PointCalculator(self, record, policy).points
         self.sqrp_points = float(Decimal(str(points)).quantize(Decimal("0.1"),
                                  rounding=ROUND_HALF_UP))
@@ -64,4 +64,3 @@ class School():
             return "Level 1"
         else:
             return "Level 1+"
-

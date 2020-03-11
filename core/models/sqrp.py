@@ -1,11 +1,11 @@
-#-------------------------------------------------------------------------------
-# SQRP.py
-# 
-# Stores relative weights for each of the SQRP indicators
-#-------------------------------------------------------------------------------
 '''
-The relative weights associated with the 2018-19 CPS indicators
+sqrp.py
+-------
+Stores relative weights for each of the SQRP indicators and maintains a
+reference to the default relative weights associated with the 2018-19
+CPS indicators.
 '''
+
 DEFAULT_RELATIVE_WEIGHTS = {
     "grade_11_sat_3yr_cohort_growth": 6,
     "priority_group_sat_growth": 6,
@@ -29,13 +29,10 @@ DEFAULT_RELATIVE_WEIGHTS = {
     "attainment_sat_grade_11_school": 0
 }
 
-'''
-A School Quality Rating Policy (SQRP) model
-'''
 class SQRP(object):
     def __init__(self, relative_weights={}):
         '''
-        The class constructor
+        The class constructor for a School Quality Rating Policy (SQRP) model
 
         Inputs:
             relative_weights (dict<string, int>): a dictionary with indicator
@@ -262,7 +259,7 @@ class SQRP(object):
     @property
     def attainment_sat_grade_11_school(self):
         '''
-        The relative weight for the optional indicator grade 11 PSAT attainment.
+        The relative weight for the optional indicator grade 11 SAT attainment.
         Not currently included in the CPS SQRP system. Defaults to 0.
         '''
         return self.relative_weights.get("attainment_sat_grade_11_school")

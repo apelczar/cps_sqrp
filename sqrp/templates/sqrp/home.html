@@ -11,14 +11,41 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
   </head>
   <style>
+      .body{
+        margin-left: 0px;
+      }
+
       .marker {
-        background-image: url("https://www.pngfind.com/pngs/m/5-57664_map-marker-pin-png-photo-clipart-red-push.png");
         background-size: cover;
         background-color: transparent;
-        width: 50px;
-        height: 50px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
         cursor: pointer;
+      }
+
+      .inability-to-rate {
+        background-image: url("{% static 'img/marker_inability_to_rate.png' %}");
+      }
+
+      .level-one-plus {
+        background-image: url("{% static 'img/marker_level_1+.png' %}");
+      }
+
+      .level-one {
+        background-image: url("{% static 'img/marker_level_1.png' %}");
+      }
+
+      .level-two {
+        background-image: url("{% static 'img/marker_level_2.png' %}");
+      }
+
+      .level-two-plus {
+        background-image: url("{% static 'img/marker_level_2+.png' %}");
+      }
+
+      .level-three {
+        background-image: url("{% static 'img/marker_level_3.png' %}");
       }
 
       .mapboxgl-popup {
@@ -32,8 +59,8 @@
   </style>
   <body>
     <nav>
-        <div class="nav-wrapper">
-          <a href="#" class="brand-logo">SQRP Playground</a>
+        <div class="nav-wrapper" style="background-color: #001A52;">
+          <a href="#" class="brand-logo" style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif">Chicago Public Schools SQRP Playground</a>
           <ul id="navComponents" class="right hide-on-med-and-down">
             <li><a href=# class="right hide-on-med-and-down">Alison Pelczar, Lily Grier, Launa Greer</a></li>
           </ul>
@@ -41,8 +68,8 @@
     </nav>
     <div>
         <div class="row">
-            <div class="col s6">
-              <div id='map' style='width: 600px; height: 600px;'></div>
+            <div class="col s6" style="padding-left: 0px;">
+              <div id='map' style="width: 800 px; height: 800px;"></div>
             </div>
             <div class="col s6">
               <ul class="tabs">
@@ -142,8 +169,8 @@
                         {{ form.attainment_psat_grade_10 }}
                       </p>
                       <p class="range-field">
-                        {{ form.attainment_psat_grade_11_school.label_tag }}
-                        {{ form.attainment_psat_grade_11_school }}
+                        {{ form.attainment_sat_grade_11_school.label_tag }}
+                        {{ form.attainment_sat_grade_11_school }}
                       </p>
                       <p class="range-field">
                         {{ form.five_essentials_survey.label_tag }}
@@ -184,7 +211,20 @@
                 {% endif %}
               </div>
               <div id="biasScore">
-                <p>{{bias_score}}</p>
+                <div class="row" style="text-align: center;">
+                  <h1 style="font-size: 10em; font-weight: bold; color:#00684D; padding: 0; margin: 0;">{{bias_score}}</h1>
+                  <br><span style="font-size: 2em; color:lightslategray; font-style: italic;">2018-19 CPS Score: 53</span>
+                </div>
+                <div class="row">
+                  <p style="padding-top: 0;">
+                    <span style="font-size: 1em; color:lightslategray; font-style: italic; padding-bottom: 0;">Explanation</span><br>
+                    {{bias_score_explanation}}
+                  </p>
+                </div>
+                <div class="row">
+                  <span style="font-size: 1em; color:lightslategray; font-style: italic; padding-bottom: 0;">Regression Plots</span><br>
+                  <img src="{% static 'img/bias_score_viz.svg' %}" alt="Linear regression plots" style="width: 100%;">
+                </div>
               </div>
             </div>
         </div>
@@ -198,27 +238,51 @@
       mapboxgl.accessToken = 'pk.eyJ1IjoibGF1bmEiLCJhIjoiY2l5aTVjYnBzMDYwMjMyb2U2b3QyNmp2YyJ9.hzRZq1zwJuLog74b9ZJ0QQ';
       var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
+        style: 'mapbox://styles/launa/ck7mur4ax0esd1imkp3ocnhil/draft',
         center: [-87.6298, 41.8781],
         zoom: 9
       });
 
-      // Create a map feature for every school
+      map.on('load', function () {
+        map.resize();
+      });
+
+      // Parse schools into JSON
       var school_dict = JSON.parse(document.getElementById('markerSource').textContent);
-      var features = []
+
+      // Create a map feature and corresponding HTML div element for each school
+      var features = [];
+      var elements = [];
+      var marker_level_map = {
+        "Level 1+": "level-one-plus",
+        "Level 1" : "level-one",
+        "Level 2" : "level-two",
+        "Level 2+" : "level-two-plus",
+        "Level 3" : "level-three",
+        "Inability to Rate" : "inability-to-rate"
+      };
+
       for (key in school_dict){
-        school = school_dict[key]
+        // Retrieve school
+        school = school_dict[key];
+
+        // Create map feature
         features.push({
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [school.location[1], school.location[0]]
+            coordinates: [school.longitude, school.latitude]
           },
           properties: {
             title: school.name,
             description: "SQRP Rating: " + school.sqrp_rating
           }
         });
+
+        // Create div element with appropriate style classes
+        var el = document.createElement('div');
+        el.className = 'marker ' + marker_level_map[school.sqrp_rating];
+        elements.push(el)
       }
       
       // Add features to GeoJSON feature collection
@@ -228,19 +292,15 @@
       };
 
       // Add markers to map
-      geojson.features.forEach(function(marker) {
-
-        // Create an HTML element for each feature
-        var el = document.createElement('div');
-        el.className = 'marker';
-          
-        // Make a marker for each feature and add to the map
+      for (i = 0; i < features.length; i++){
+        var el = elements[i]
+        var marker = features[i]
         new mapboxgl.Marker(el)
         .setLngLat(marker.geometry.coordinates)
         .setPopup(new mapboxgl.Popup({ offset: 25 })
-        .setHTML('<h6>' + marker.properties.title + '</h6><p>' + marker.properties.description + '</p>'))
+        .setHTML('<h6><b>' + marker.properties.title + '</b></h6><p>' + marker.properties.description + '</p>'))
         .addTo(map);
-      });
+      }
       </script>
       <script>
         $(document).ready(function(){

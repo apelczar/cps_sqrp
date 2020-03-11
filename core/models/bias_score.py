@@ -8,10 +8,24 @@
 
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
+BIAS_SCORE_EXPLANATION = '''
+    The bias score measures how well the demographics of schools align with the 
+    points they earn under the SQRP. It ranges from 0 to 100. Lower scores 
+    represent less bias: a 0 means that the demographics of a school tells us 
+    nothing about its point total, while a 100 means that we can perfectly 
+    predict a school's point total with only its demographic information. The 
+    demographic measures used in calculating the bias score are the percent of 
+    students who are low income, special education, and English language 
+    learners. From a statistical perspective, the bias score is the R^2 value, 
+    in integer form, of a linear regression model with SQRP points as the 
+    dependent variable and the three demographic measures above as the 
+    independent variables. For reference, the bias score of the 2018-2019 
+    SQRP policy is 53.
+    '''
 
 def calculate_bias_score(df):
     '''
@@ -57,7 +71,7 @@ def create_plots(df):
     sns.set()
 
     colors = ["#00956E", "#8A1A9C", "#EE7624"]
-    fig, (ax1, ax2, ax3) = plt.subplots(ncols=3, sharey=True)
+    _, (ax1, ax2, ax3) = plt.subplots(ncols=3, sharey=True)
     sns.regplot(x="percent_low_income", y="sqrp_points", data=df, ci=None,
                 color=colors[0], ax=ax1)
     ax1.set(xlabel="Low Income", ylabel="SQRP Points", ylim=(0,5))
@@ -68,4 +82,5 @@ def create_plots(df):
                 color=colors[2], ax=ax3)
     ax3.set(xlabel="Special Education", ylabel="", ylim=(0,5))
 
-    plt.savefig("plots/bias_score_viz.svg")
+    plt.savefig("./sqrp/static/img/bias_score_viz.svg")
+    plt.close("all")

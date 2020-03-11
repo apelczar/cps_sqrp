@@ -192,8 +192,8 @@ class SQRPModelConfigForm(forms.Form):
                 "min": 0,
                 "max": 6
             }))
-    attainment_psat_grade_11_school = forms.IntegerField(
-                label="Grade 11 PSAT Attainment", 
+    attainment_sat_grade_11_school = forms.IntegerField(
+                label="Grade 11 SAT Attainment", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',
