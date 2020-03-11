@@ -325,6 +325,16 @@
           $('.tabs').tabs();
           $('.collapsible').collapsible();
         });
+
+        $("#search").submit(function(e){
+          alert( "Handler for .submit() called." );
+          var val = $("#search").first().val()
+          console.log(val)
+          var school_dict = JSON.parse(document.getElementById('markerSource').textContent);
+          var filtered_arr = $.grep(school_dict, function(){
+            console.log("filtering") 
+          })
+        });
       </script>
   </body>
 </html>
