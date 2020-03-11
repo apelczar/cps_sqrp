@@ -65,7 +65,7 @@ def create_plots(df):
         df: pandas dataframe from calculate_bias_score functions
 
     Returns:
-        saves a file called "bias_score_viz.svg" in folder core/plots
+        saves a file called "bias_score_viz.svg"
     '''
 
     sns.set()
@@ -83,4 +83,28 @@ def create_plots(df):
     ax3.set(xlabel="Special Education", ylabel="", ylim=(0,5))
 
     plt.savefig("./sqrp/static/img/bias_score_viz.svg")
+    plt.close("all")
+
+
+def create_histogram(ratings_lst):
+    '''
+    Create a histogram for the distribution of schools across levels.
+
+    Inputs:
+        ratings_lst: a list of all the ratings
+
+    Returns:
+        saves a file called "level_dist.svg"
+    '''
+    sns.set()
+
+    fig = plt.gcf()
+    fig.set_size_inches(7, 4)
+    colors = ["#B875C3", "#A147AF", "#7C178C", "#60126D", "#450D4E", "#000000"]
+    order = ["Level 1+", "Level 1", "Level 2+", "Level 2", "Level 3",
+             "Inability to Rate"]
+    sns.countplot(ratings_lst, order=order, palette=colors)
+    plt.ylabel("Number of Schools")
+
+    plt.savefig("./sqrp/static/img/level_dist.svg")
     plt.close("all")
