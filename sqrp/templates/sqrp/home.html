@@ -4,8 +4,9 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>School Quality Rating Policy (SQRP) Playground</title>
+    <title>Chicago Public Schools SQRP Playground</title>
     <link rel="stylesheet" href="{% static 'css/materialize.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
@@ -186,28 +187,45 @@
                 </form>
               </div>
               <div id="results">
-                {% if schools %}
-                {% for school in schools %}
-                <div class="card horizontal">
-                  <div class="card-image">
-                    <img src="https://www.voicesofyouth.org/sites/default/files/images/2019-03/school.jpg">
-                  </div>
-                  <div class="card-stacked">
-                    <div class="card-content">
-                      <p style="font-weight: bold;">{{school.name}}</p>
-                      <p>2018-19 CPS Rating: {{school.cps_rating}}</p>
-                      <p>SQRP Rating: {{school.sqrp_rating}}</p>
-                      <p>SQRP Points: {{school.sqrp_points}}</p>
-                      <p>STREET ADDRESS</p>
-                      <p>CITY, STATE ZIPCODE</p>
-                      <p>PHONE NUMBER</p>
-                    </div>
-                    <div class="card-action">
-                      <a href="#">Link</a>
-                    </div>
+                <div class="nav-wrapper">
+                  <div class="input-field">
+                    <input id="search" type="search" placeholder="Search for schools by name, location, or rating">
+                    <label class="label-icon" for="search"><i class="material-icons" style="padding-right: 1em;">search</i></label>
+                    <i class="material-icons">close</i>
                   </div>
                 </div>
-                {% endfor %}
+                {% if schools %}
+                <ul class="collapsible">
+                  {% for school in schools %}
+                  <li>
+                    <div class="collapsible-header">
+                      <i class="material-icons">school</i>
+                      <span style="font-weight: bold; position: right;">{{school.name}} - {{school.sqrp_rating}}</span>
+                    </div>
+                    <div class="collapsible-body">
+                      <div class="card horizontal">
+                        <div class="card-image">
+                          <img src="https://www.voicesofyouth.org/sites/default/files/images/2019-03/school.jpg">
+                        </div>
+                        <div class="card-stacked">
+                          <div class="card-content">
+                            <p style="font-weight: bold;">{{school.name}}</p>
+                            <p>2018-19 CPS Rating: {{school.cps_rating}}</p>
+                            <p>SQRP Rating: {{school.sqrp_rating}}</p>
+                            <p>SQRP Points: {{school.sqrp_points}}</p>
+                            <p>STREET ADDRESS</p>
+                            <p>CITY, STATE ZIPCODE</p>
+                            <p>PHONE NUMBER</p>
+                          </div>
+                          <div class="card-action">
+                            <a href="#">Link</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  {% endfor %}
+                </ul>
                 {% endif %}
               </div>
               <div id="biasScore">
@@ -305,6 +323,7 @@
       <script>
         $(document).ready(function(){
           $('.tabs').tabs();
+          $('.collapsible').collapsible();
         });
       </script>
   </body>
