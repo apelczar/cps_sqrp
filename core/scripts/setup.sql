@@ -35,5 +35,15 @@ CREATE TABLE sqrp
 		attainment_psat_grade_9_school decimal,
 		attainment_psat_grade_10 decimal,
 		attainment_sat_grade_11_school decimal,
+		address varchar(100),
+		city varchar(50),
+		state varchar(50),
+		zip varchar(50),
+		phone varchar(50),
+		website varchar(100),
+		facebook varchar(100),
+		twitter varchar(100),
+		youtube varchar(100),
+		pinterest varchar(100),
 		constraint pk_sqrp primary key (school_id)
 );

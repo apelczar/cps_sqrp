@@ -28,6 +28,15 @@ class School():
         self.id = record["school_id"]
         self.latitude = record["school_latitude"]
         self.longitude = record["school_longitude"]
+        self.address = record["address"]
+        self.city = record["city"]
+        self.state = record["state"]
+        self.zip = record["zip"]
+        self.phone = record["phone"]
+        self.facebook = record["facebook"]
+        self.twitter = record["twitter"]
+        self.youtube = record["youtube"]
+        self.pinterest = record["pinterest"]
         self.cps_rating = record["current_sqrp_rating"]
         self.weights = {k:0 for k in ALL_INDICATORS}
         points = PointCalculator(self, record, policy).points
