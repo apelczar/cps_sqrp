@@ -12,7 +12,7 @@ import sqlite3
 import sys
 import os
 
-DATABASE_PATH = "db.sqlite3"
+DATABASE_PATH = "../../db.sqlite3"
 
 def setup():
     '''
@@ -29,8 +29,11 @@ def setup():
     build_tables()
     progress_df = apiclient.get_progress_report_data()
     profile_df = apiclient.get_profile_data() # enrollment
+    social_media = apiclient.get_social_media_data()
     sqrp_excel = excel_client.make_final_df()
-    sqrp_df = sqrp_excel.merge(progress_df, on="school_id", how="inner")
+    sqrp_df = sqrp_excel.merge(progress_df, on="school_id", \
+              how="inner").merge(social_media, on="school_id", how="inner")
+    #sqrp_df = sqrp_df.merge(social_media, on="school_id", how="inner")
     insert_records(profile_df, 'enrollment')
     insert_records(sqrp_df, 'sqrp')
 
