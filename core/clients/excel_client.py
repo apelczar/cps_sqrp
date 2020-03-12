@@ -1,5 +1,5 @@
 import pandas as pd
-import xlrd
+#import xlrd
 import re
 import sqlite3
 
