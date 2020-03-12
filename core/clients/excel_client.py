@@ -1,12 +1,15 @@
 import pandas as pd
-#import xlrd
 import re
 import sqlite3
 
-filename = "../data/Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
+FILENAME = "../data/Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 
 
 def make_final_df():
+    '''
+    Creates the final dataframe from the High School and Combination
+        Schools pages on the SQRP Excel spreadsheet.
+    '''
     hs_data = load_and_clean_file(2)
     combo_school_data = load_and_clean_file(3)
     final_df = pd.concat([hs_data, combo_school_data], axis=0)
@@ -14,30 +17,42 @@ def make_final_df():
     return final_df
 
 def load_and_clean_file(sheet_name):
-    #filename = "Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
-    hs_data = load_data(filename, sheet_name)
+    '''
+    Loads and cleans data. Returns a Pandas dataframe.
+    Inputs:
+        sheet_name (int): the sheet number to be loaded/cleaned
+    '''
+    hs_data = load_data(sheet_name)
     pared_df = pare_df(hs_data, sheet_name)
 
     return rename_cols(pared_df, sheet_name)
 
 
-def load_data(filename, sheet_name): 
+def load_data(sheet_name): 
     '''
     Loads spreadsheet from row 4 down.
+    Inputs:
+        sheet_name (int): the sheet number to be loaded/cleaned
+
     '''
-    df = pd.read_excel(filename, sheet_name, header=[1, 2])
+    df = pd.read_excel(FILENAME, sheet_name, header=[1, 2])
     df.columns = [": ".join(col).strip() for col in df.columns.values]
-    if sheet_name == 3: # drop elementary school survey col in combo sheet to avoid future confusion
+    if sheet_name == 3: # drop elementary school survey col in combo sheet
         df.drop(df.columns[74], axis=1, inplace=True)
     return df
 
-def initial_clean(hs_data, sheet_name): # JUST ADDED SHEET_NAME VAR
+def initial_clean(hs_data, sheet_name):
+    '''
+    Cleans the column names of excess spaces for easier processing.
+    Inputs:
+        hs_data: a Pandas dataframe
+        sheet_name: sheet number from original Excel spreadsheet.
+            2 indicates high school data and 3 indicates combo school data
+    '''
     #hs_data = load_data(filename, sheet_name)
     cols_to_keep = []
     for col in hs_data.columns:
-        #if re.search(r': Score', col):
         if re.search(r': Points|School ID|School Name|SY 2018-2019 SQRP Rating', col):
-            #re.sub(r' :', "", col)
             cols_to_keep.append(col)
         if sheet_name == 2:
             if re.search(r'SQRP Total Points Earned', col):
@@ -45,31 +60,25 @@ def initial_clean(hs_data, sheet_name): # JUST ADDED SHEET_NAME VAR
         if sheet_name == 3: # combo sheet
             if re.search(r'High School SQRP Points Earned', col):
                 cols_to_keep.append(col)
-        #elif sheet_name
     clean_names = {}
-    #print("cols to keep: ", cols_to_keep)
     for col in cols_to_keep:
-        # FIGURE OUT HOW TO DO THIS WITH SINGLE REGEX:
-        # TAKE OUT DOUBLE SPACES AND SPACES BEFORE COLONS
-        # TAKE OUT '\n'
-        # REMOVE UNNAMED AND EVERYTHING AFTER
-        col_clean = col.replace(" :", ":") # get rid of whitespace before colon
-        col_clean = col_clean.replace("  ", " ") # get rid of second whitespace
-        col_clean = col_clean.replace("\n", "")
-        col_clean = re.sub(r": Unnamed: \w+", "", col_clean)
-        col_clean = re.sub(r": Points", "", col_clean)
-        #re.sub(r'\s+', " ", col)
+        col_clean = re.sub(r" :", ":", col)
+        col_clean = re.sub(r"  ", " ", col_clean)
+        col_clean = re.sub(r": Unnamed: \w+|: Points|\n", "", col_clean)
         clean_names[col] = col_clean
-    #print("clean_names columns", clean_names.keys())
     return clean_names
 
 def pare_df(hs_data, sheet_name):
     '''
-    Specifies columns to keep and cleans their names
+    Specifies columns to keep and cleans their names.
+    Inputs:
+        hs_data: a Pandas dataframe created from the Excel file
+        sheet_name: sheet number from original Excel spreadsheet.
+            2 indicates high school data and 3 indicates combo school data
+
     '''
     names_dict = initial_clean(hs_data, sheet_name)
     cols_to_keep = list(names_dict.keys())
-    #print("cols_to_keep looks like: ", cols_to_keep)
     pared_df = hs_data[cols_to_keep]
     pared_df = pared_df.rename(columns=names_dict)
 
@@ -80,7 +89,9 @@ def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
     '''
     Assigns new names to all columns
     Inputs:
-        a pared data frame
+        pared_df: a Pandas dataframe with trimmed column names
+        sheet_name: sheet number from original Excel spreadsheet.
+            2 indicates high school data and 3 indicates combo school data
     '''
 
     var_names = {"School ID": "school_id",
@@ -107,16 +118,6 @@ def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
     "SAT11 Diverse Learner Cohort Growth Percentile": "dl_sat_growth",
     "SY 2018-2019 SQRP Rating": "current_sqrp_rating"
     }
-    print("pared_df cols before renaming: ", pared_df.columns)
-
-    #if sheet_name == 2:
-        #var_names["SQRP Total Points Earned"] = "current_sqrp_points"
-        #var_names['SY 2018-2019 SQRP Rating: Unnamed: 8_level_1'] = "current_sqrp_points"
-    
-    #if sheet_name == 3:
-        #var_names['High School SQRP Points Earned: Unnamed: 5_level_1'] = "current_sqrp_points"
-    #'High School SQRP Points Earned: Unnamed: 5_level_1'
-    print("var_names looks like: ", var_names)
 
     pared_df = pared_df[list(var_names.keys())] # remove extraneous variables
     final_df = pared_df.rename(columns=var_names)
