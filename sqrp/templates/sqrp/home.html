@@ -188,6 +188,7 @@
               </div>
               <div id="results">
                 <div class="nav-wrapper">
+                  <img src="{% static 'img/level_dist.svg' %}" alt="School level counts" style="width: 100%;">
                   <div class="input-field">
                     <input id="search" type="search" placeholder="Search for schools by name, location, or rating">
                     <label class="label-icon" for="search"><i class="material-icons" style="padding-right: 1em;">search</i></label>
@@ -197,7 +198,7 @@
                 {% if schools %}
                 <ul class="collapsible">
                   {% for school in schools %}
-                  <li>
+                  <li id="{{school.id}}">
                     <div class="collapsible-header">
                       <i class="material-icons">school</i>
                       <span style="font-weight: bold; position: right;">{{school.name}} - {{school.sqrp_rating}}</span>
@@ -213,7 +214,7 @@
                             <p>2018-19 CPS Rating: {{school.cps_rating}}</p>
                             <p>SQRP Rating: {{school.sqrp_rating}}</p>
                             <p>SQRP Points: {{school.sqrp_points}}</p>
-                            <p>STREET ADDRESS</p>
+                            <p>{{school.}}</p>
                             <p>CITY, STATE ZIPCODE</p>
                             <p>PHONE NUMBER</p>
                           </div>
@@ -326,14 +327,17 @@
           $('.collapsible').collapsible();
         });
 
-        $("#search").submit(function(e){
-          alert( "Handler for .submit() called." );
-          var val = $("#search").first().val()
-          console.log(val)
-          var school_dict = JSON.parse(document.getElementById('markerSource').textContent);
-          var filtered_arr = $.grep(school_dict, function(){
-            console.log("filtering") 
-          })
+        $('#search').keypress(function (e) {
+          if (e.which == 13) {
+            alert( "User submitted new input");
+            var val = $("#search").first().val();
+            console.log("The value is " + val);
+            var school_dict = JSON.parse(document.getElementById('markerSource').textContent);
+            var filtered_arr = $.grep(school_dict, function(s){
+              return s.name + " - " + s.sqrp_rating == val
+            })
+            console.log(filtered_arr)
+          }
         });
       </script>
   </body>
