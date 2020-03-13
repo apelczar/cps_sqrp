@@ -44,6 +44,9 @@ def calculate_bias_score(df):
     df = df[df["sqrp_points"] != 0]
     df = df.dropna()
 
+    if not len(df):
+        return "N/A"
+
     #Run the regression
     X = df[["percent_low_income", "percent_english_learners", 
             "percent_special_ed"]]
