@@ -11,6 +11,9 @@ def get_data(url, col_names, cols_dict):
     '''
     Calls the API endpoint using url, generates a query with specified columns, 
     and returns a Pandas dataframe.
+    Inputs:
+      col_names: a list of column names to include in the dataframe
+      cols_dict: a dictionary of column names and data types
     '''
     attributes = ", ".join(col_names)
     query = "?$query=SELECT " + attributes + " WHERE primary_category = 'HS'"
