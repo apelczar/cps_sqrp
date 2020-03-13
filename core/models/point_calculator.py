@@ -221,6 +221,8 @@ class PointCalculator():
         for indicator, wt in self.school.weights.items():
             if wt and indicator != "priority_group_sat_growth":
                 used_rel_weight_total += self.policy.relative_weights[indicator]
+        if not used_rel_weight_total:
+            return points
         inflation_base = (1 - weight) / used_rel_weight_total
         for indicator in self.school.weights:
             if (self.school.weights[indicator] and indicator != 

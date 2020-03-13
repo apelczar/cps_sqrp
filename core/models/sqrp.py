@@ -274,4 +274,5 @@ class SQRP(object):
         Returns:
             (float): a value between 0 and 1
         '''
-        return 1 / sum(self.relative_weights.values())
+        return 1 / sum(self.relative_weights.values()) if sum(
+            self.relative_weights.values()) else 0
