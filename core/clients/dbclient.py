@@ -12,7 +12,7 @@ import sqlite3
 import sys
 import os
 
-DATABASE_PATH = "../../db.sqlite3"
+DATABASE_PATH = "db.sqlite3"
 
 def setup():
     '''
@@ -50,7 +50,7 @@ def build_tables():
     '''
     con = sqlite3.connect(DATABASE_PATH)
     u = con.cursor()
-    with open('../scripts/setup.sql') as f:
+    with open('core/scripts/setup.sql') as f:
         commands = f.read()
         u.executescript(commands)
     con.close()
@@ -90,7 +90,7 @@ def get_records():
     conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM sqrp;")
+    cursor.execute("SELECT * FROM sqrp ORDER BY school_name;")
     rows = cursor.fetchall()
     schools = [dict(r) for r in rows]
     enrollment = pd.read_sql_query("SELECT * FROM enrollment",

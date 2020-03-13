@@ -105,7 +105,5 @@ def create_histogram(ratings_lst):
              "Inability to Rate"]
     sns.countplot(ratings_lst, order=order, palette=colors)
     plt.ylabel("Number of Schools")
-    plt.title("School Level Counts")
-
-    plt.savefig("./sqrp/static/img/level_dist.svg")
+    plt.savefig("./sqrp/static/img/level_dist.svg",bbox_inches='tight')
     plt.close("all")
