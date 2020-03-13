@@ -49,12 +49,11 @@ def initial_clean(hs_data, sheet_name):
         sheet_name: sheet number from original Excel spreadsheet.
             2 indicates high school data and 3 indicates combo school data
     '''
-    #hs_data = load_data(filename, sheet_name)
     cols_to_keep = []
     for col in hs_data.columns:
         if re.search(r': Points|School ID|School Name|SY 2018-2019 SQRP Rating', col):
             cols_to_keep.append(col)
-        if sheet_name == 2:
+        if sheet_name == 2: # hs only sheet
             if re.search(r'SQRP Total Points Earned', col):
                 cols_to_keep.append(col)
         if sheet_name == 3: # combo sheet
