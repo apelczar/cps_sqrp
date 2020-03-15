@@ -23,7 +23,7 @@ class SQRPModelConfigForm(forms.Form):
                 "max": 6
             }))
     grade_9_psat_cohort_growth = forms.IntegerField(
-                label="Grade 9: PSAT Cohort Growth", 
+                label="Grade 9 PSAT Cohort Growth", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',
@@ -33,7 +33,7 @@ class SQRPModelConfigForm(forms.Form):
                 "max": 6
             }))
     grade_10_psat_annual_growth_ebrw = forms.IntegerField(
-                label="Grade 10: PSAT Annual Growth EBRW", 
+                label="Grade 10 PSAT Annual Growth EBRW", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',
@@ -43,7 +43,7 @@ class SQRPModelConfigForm(forms.Form):
                 "max": 6
             }))
     grade_10_psat_annual_growth_math = forms.IntegerField(
-                label="Grade 10: PSAT Annual Growth Math", 
+                label="Grade 10 PSAT Annual Growth Math", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',
@@ -53,7 +53,7 @@ class SQRPModelConfigForm(forms.Form):
                 "max": 6
             }))
     grade_11_sat_3yr_cohort_growth = forms.IntegerField(
-                label="Grade 11: SAT 3-year Cohort Growth", 
+                label="Grade 11 SAT 3-year Cohort Growth", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',
@@ -63,7 +63,7 @@ class SQRPModelConfigForm(forms.Form):
                 "max": 6
             }))
     grade_11_sat_growth_ebrw = forms.IntegerField(
-                label="Grade 11: SAT Growth EBRW", 
+                label="Grade 11 SAT Growth EBRW", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',
@@ -73,7 +73,7 @@ class SQRPModelConfigForm(forms.Form):
                 "max": 6
             }))
     grade_11_sat_growth_math = forms.IntegerField(
-                label="Grade 11: SAT Growth Math", 
+                label="Grade 11 SAT Growth Math", 
                 widget=NumberInput(attrs={
                 'class': 'range-field',
                 'type': 'range',

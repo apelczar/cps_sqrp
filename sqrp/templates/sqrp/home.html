@@ -5,58 +5,86 @@
   <head>
     <meta charset="utf-8">
     <title>Chicago Public Schools SQRP Playground</title>
-    <link rel="stylesheet" href="{% static 'css/materialize.css' %}">
+    <link href="{% static 'css/materialize.css' %}" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
   </head>
   <style>
-      .body{
-        margin-left: 0px;
-      }
+    .body{
+      margin-left: 0px;
+    }
 
-      .marker {
-        background-size: cover;
-        background-color: transparent;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        cursor: pointer;
-      }
+    .marker {
+      background-size: cover;
+      background-color: transparent;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
 
-      .inability-to-rate {
-        background-image: url("{% static 'img/marker_inability_to_rate.png' %}");
-      }
+    .inability-to-rate {
+      background-image: url("{% static 'img/marker_inability_to_rate.png' %}");
+    }
 
-      .level-one-plus {
-        background-image: url("{% static 'img/marker_level_1+.png' %}");
-      }
+    .level-one-plus {
+      background-image: url("{% static 'img/marker_level_1+.png' %}");
+    }
 
-      .level-one {
-        background-image: url("{% static 'img/marker_level_1.png' %}");
-      }
+    .level-one {
+      background-image: url("{% static 'img/marker_level_1.png' %}");
+    }
 
-      .level-two {
-        background-image: url("{% static 'img/marker_level_2.png' %}");
-      }
+    .level-two {
+      background-image: url("{% static 'img/marker_level_2.png' %}");
+    }
 
-      .level-two-plus {
-        background-image: url("{% static 'img/marker_level_2+.png' %}");
-      }
+    .level-two-plus {
+      background-image: url("{% static 'img/marker_level_2+.png' %}");
+    }
 
-      .level-three {
-        background-image: url("{% static 'img/marker_level_3.png' %}");
-      }
+    .level-three {
+      background-image: url("{% static 'img/marker_level_3.png' %}");
+    }
 
-      .mapboxgl-popup {
-        max-width: 200px;
-      }
-      
-      .mapboxgl-popup-content {
-        text-align: center;
-        font-family: 'Open Sans', sans-serif;
-      }
+    .mapboxgl-popup {
+      max-width: 200px;
+    }
+    
+    .mapboxgl-popup-content {
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .tabs .tab a {
+      font-weight: bold;
+      color: rgba(0, 104, 77, 0.7);
+      /*Custom Text Color*/
+    }
+
+    .tabs .tab a:hover {
+      color:#00684d;
+      /*Custom Color On Hover*/
+    }
+
+    .tabs .tab a:focus.active, .tabs .tab a.active {
+      color:#ffffff;
+      /*Custom Text Color While Active*/
+      background-color: rgba(0, 104, 77, 0.5);
+      /*Custom Background Color While Active*/
+    }
+
+    .tabs .indicator {
+      background-color:#26a69a;
+      /*Custom Color Of Indicator*/
+    }
+
+    #modelConfig h6 {
+      font-weight: bold;
+    }
   </style>
   <body>
     <div class="navbar-fixed">
@@ -70,230 +98,238 @@
     </nav>
     </div>
     <div>
-        <div class="row">
-            <div class="col s6 pushpin" style="padding-left: 0px;">
-              <div id='map' style="width: 800 px; height: 800px;"></div>
-            </div>
-            <div class="col s6">
-            </div>
-            <div class="col s6">
-              <ul class="tabs">
-                <li class="tab col s4"><a href="#modelConfig">Configure Model</a></li>
-                <li class="tab col s4"><a href="#results">View Results</a></li>
-                <li class="tab col s4"><a href="#biasScore">View Bias Score</a></li>
-              </ul>
-              <div id="modelConfig">
-                <form method="POST">
-                  {% csrf_token %}
-                  <div class="row">
-                    <div id="PSATInputs" class="col s4">
-                      <h6>PSAT</h6>
-                      <p class="range-field">
-                        {{ form.grade_9_psat_cohort_growth.label_tag }}
-                        {{ form.grade_9_psat_cohort_growth }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.grade_10_psat_annual_growth_ebrw.label_tag }}
-                        {{ form.grade_10_psat_annual_growth_ebrw }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.grade_10_psat_annual_growth_math.label_tag }}
-                        {{ form.grade_10_psat_annual_growth_math }}
-                      </p>
-                    </div>
-                    <div id="SATInputs" class="col s4">
-                      <h6>SAT</h6>
-                      <p class="range-field">
-                        {{ form.grade_11_sat_3yr_cohort_growth.label_tag }}
-                        {{ form.grade_11_sat_3yr_cohort_growth }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.grade_11_sat_growth_ebrw.label_tag }}
-                        {{ form.grade_11_sat_growth_ebrw }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.grade_11_sat_growth_math.label_tag }}
-                        {{ form.grade_11_sat_growth_math }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.priority_group_sat_growth.label_tag }}
-                        {{ form.priority_group_sat_growth }}
-                      </p>
-                    </div>
-                    <div id="RetentionInputs" class="col s4">
-                      <h6>Retention</h6>
-                      <p class="range-field">
-                        {{ form.avg_daily_attendance_rate.label_tag }}
-                        {{ form.avg_daily_attendance_rate }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.freshmen_on_track_rate.label_tag }}
-                        {{ form.freshmen_on_track_rate }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.four_year_cohort_graduation_rate.label_tag }}
-                        {{ form.four_year_cohort_graduation_rate }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.one_year_dropout_rate.label_tag }}
-                        {{ form.one_year_dropout_rate }}
-                      </p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div id="CollegePrepInputs" class="col s4">
-                      <h6>College Preparation</h6>
-                      <p class="range-field">
-                        {{ form.percent_students_college_ready.label_tag }}
-                        {{ form.percent_students_college_ready }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.percent_graduating_with_creds.label_tag }}
-                        {{ form.percent_graduating_with_creds }}
-                      </p>
-                    </div>
-                    <div id="CollegeInputs" class="col s4">
-                      <h6>College</h6>
-                      <p class="range-field">
-                        {{ form.college_enrollment_rate.label_tag }}
-                        {{ form.college_enrollment_rate }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.college_persistence_rate.label_tag }}
-                        {{ form.college_persistence_rate }}
-                      </p>
-                    </div>
-                    <div id="OtherInputs" class="col s4">
-                      <h6>Other</h6>
-                      <p class="range-field">
-                        {{ form.attainment_psat_grade_9_school.label_tag }}
-                        {{ form.attainment_psat_grade_9_school }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.attainment_psat_grade_10.label_tag }}
-                        {{ form.attainment_psat_grade_10 }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.attainment_sat_grade_11_school.label_tag }}
-                        {{ form.attainment_sat_grade_11_school }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.five_essentials_survey.label_tag }}
-                        {{ form.five_essentials_survey }}
-                      </p>
-                      <p class="range-field">
-                        {{ form.data_quality_index_score.label_tag }}
-                        {{ form.data_quality_index_score }}
-                      </p>
-                    </div>
-                  </div>
-                  <button class="btn waves-effect waves-light" type="submit" name="action">Update</button>
-                </form>
-              </div>
-              <div id="results">
-                <div class="nav-wrapper">
-                  <p style="font-weight: bold;">Distribution of School Levels under Current Model</p>
-                  <img src="{% static 'img/level_dist.svg' %}" alt="School level counts" style="width: 100%;">
-                  <p style="font-weight: bold;">Filter Schools</p>
-                  <div class="input-field">
-                    <input id="search" type="search" placeholder="Search for schools by name, location, or rating">
-                    <label class="label-icon" for="search"><i class="material-icons" style="padding-right: 1em;">search</i></label>
-                    <i class="material-icons">close</i>
-                  </div>
-                  <div class="row">
-                    <div class="col sm2 level-filter">
-                      <label>
-                        <input type="checkbox" checked="checked" />
-                        <span>Level 1+</span>
-                      </label>
-                    </div>
-                    <div class="col sm2 level-filter">
-                      <label>
-                        <input type="checkbox" checked="checked" />
-                        <span>Level 1</span>
-                      </label>
-                    </div>
-                    <div class="col sm2 level-filter">
-                      <label>
-                        <input type="checkbox" checked="checked" />
-                        <span>Level 2+</span>
-                      </label>
-                    </div>
-                    <div class="col sm2 level-filter">
-                      <label>
-                        <input type="checkbox" checked="checked" />
-                        <span>Level 2</span>
-                      </label>
-                    </div>
-                    <div class="col sm2 level-filter">
-                      <label>
-                        <input type="checkbox" checked="checked" />
-                        <span>Level 3</span>
-                      </label>
-                    </div>
-                    <div class="col sm2 level-filter">
-                      <label>
-                        <input type="checkbox" checked="checked" />
-                        <span>Inability to Rate</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                {% if schools %}
-                <ul class="collapsible">
-                  {% for school in schools %}
-                  <li id="{{school.id}}" class="school-record">
-                    <div class="collapsible-header">
-                      <i class="material-icons">school</i>
-                      <span style="font-weight: bold; position: right;">{{school.name}} - {{school.sqrp_rating}}</span>
-                    </div>
-                    <div class="collapsible-body">
-                      <div class="card horizontal">
-                        <div class="card-image">
-                          {% with 'img/'|add:school.id|add:'.jpg' as school_photo %}
-                          <img src="{% static school_photo %}" style="width: 100%; height: 100%;">
-                          {% endwith %}
-                        </div>
-                        <div class="card-stacked">
-                          <div class="card-content">
-                            <p style="font-weight: bold;">{{school.name}}</p>
-                            <p>{{school.address}}</p>
-                            <p>{{school.city}}, {{school.state}} {{school.zip}}</p>
-                            <p>{{school.phone}}</p>
-                            <br>
-                            <p>2018-19 CPS Rating: {{school.cps_rating}}</p>
-                            <p>SQRP Rating: {{school.sqrp_rating}}</p>
-                            <p>SQRP Points: {{school.sqrp_points}}</p>
-                          </div>
-                          <div class="card-action">
-                            <a href="{{school.facebook}}">Link</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
-                {% endif %}
-              </div>
-              <div id="biasScore">
-                <div class="row" style="text-align: center;">
-                  <h1 style="font-size: 10em; font-weight: bold; color:#00684D; padding: 0; margin: 0;">{{bias_score}}</h1>
-                  <br><span style="font-size: 2em; color:lightslategray; font-style: italic;">2018-19 CPS Score: 53</span>
-                </div>
-                <div class="row">
-                  <p style="padding-top: 0;">
-                    <span style="font-size: 1em; color:lightslategray; font-style: italic; padding-bottom: 0;">Explanation</span><br>
-                    {{bias_score_explanation}}
+      <div class="row">
+        <div class="col s6 pushpin" style="padding-left: 0px;">
+          <div id='map' style="width: 800 px; height: 800px;"></div>
+        </div>
+        <div class="col s6">
+        </div>
+        <div class="col s6">
+          <ul class="tabs">
+            <li class="tab col s4"><a href="#modelConfig">Configure Model</a></li>
+            <li class="tab col s4"><a href="#results">View Results</a></li>
+            <li class="tab col s4"><a href="#biasScore">View Bias Score</a></li>
+          </ul>
+          <div id="modelConfig">
+            <form method="POST">
+              {% csrf_token %}
+              <div class="row">
+                <div id="PSATInputs" class="col s4">
+                  <h6>PSAT Growth</h6>
+                  <p class="range-field">
+                    {{ form.grade_9_psat_cohort_growth.label_tag }}
+                    {{ form.grade_9_psat_cohort_growth }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.grade_10_psat_annual_growth_ebrw.label_tag }}
+                    {{ form.grade_10_psat_annual_growth_ebrw }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.grade_10_psat_annual_growth_math.label_tag }}
+                    {{ form.grade_10_psat_annual_growth_math }}
                   </p>
                 </div>
-                <div class="row">
-                  <span style="font-size: 1em; color:lightslategray; font-style: italic; padding-bottom: 0;">Regression Plots</span><br>
-                  <img src="{% static 'img/bias_score_viz.svg' %}" alt="Linear regression plots" style="width: 100%;">
+                <div id="SATInputs" class="col s4">
+                  <h6>SAT Growth</h6>
+                  <p class="range-field">
+                    {{ form.grade_11_sat_3yr_cohort_growth.label_tag }}
+                    {{ form.grade_11_sat_3yr_cohort_growth }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.grade_11_sat_growth_ebrw.label_tag }}
+                    {{ form.grade_11_sat_growth_ebrw }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.grade_11_sat_growth_math.label_tag }}
+                    {{ form.grade_11_sat_growth_math }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.priority_group_sat_growth.label_tag }}
+                    {{ form.priority_group_sat_growth }}
+                  </p>
+                </div>
+                <div id="TestAttainmentInputs" class="col s4">
+                  <h6>Test Attainment</h6>
+                  <p class="range-field">
+                    {{ form.attainment_psat_grade_9_school.label_tag }}
+                    {{ form.attainment_psat_grade_9_school }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.attainment_psat_grade_10.label_tag }}
+                    {{ form.attainment_psat_grade_10 }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.attainment_sat_grade_11_school.label_tag }}
+                    {{ form.attainment_sat_grade_11_school }}
+                  </p>
+                </div>
+              </div>
+              <div class="row">
+                <div id="RetentionInputs" class="col s4">
+                  <h6>Retention</h6>
+                  <p class="range-field">
+                    {{ form.avg_daily_attendance_rate.label_tag }}
+                    {{ form.avg_daily_attendance_rate }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.freshmen_on_track_rate.label_tag }}
+                    {{ form.freshmen_on_track_rate }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.four_year_cohort_graduation_rate.label_tag }}
+                    {{ form.four_year_cohort_graduation_rate }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.one_year_dropout_rate.label_tag }}
+                    {{ form.one_year_dropout_rate }}
+                  </p>
+                </div>
+                <div id="CollegeInputs" class="col s4">
+                  <h6>Bridge to College</h6>
+                  <p class="range-field">
+                    {{ form.percent_students_college_ready.label_tag }}
+                    {{ form.percent_students_college_ready }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.percent_graduating_with_creds.label_tag }}
+                    {{ form.percent_graduating_with_creds }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.college_enrollment_rate.label_tag }}
+                    {{ form.college_enrollment_rate }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.college_persistence_rate.label_tag }}
+                    {{ form.college_persistence_rate }}
+                  </p>
+                </div>
+                <div id="OtherInputs" class="col s4">
+                  <h6>Other</h6>
+                  <p class="range-field">
+                    {{ form.five_essentials_survey.label_tag }}
+                    {{ form.five_essentials_survey }}
+                  </p>
+                  <p class="range-field">
+                    {{ form.data_quality_index_score.label_tag }}
+                    {{ form.data_quality_index_score }}
+                  </p>
+                </div>
+              </div>
+              <button class="btn waves-effect waves-light" type="submit" name="action">Update</button>
+            </form>
+          </div>
+          <div id="results">
+            <div class="nav-wrapper">
+              <h6 style="font-weight: bold;">Distribution of Ratings under Current Model</h6>
+              <img src="{% static 'img/level_dist.svg' %}" alt="School level counts">
+              <h6 style="font-weight: bold;">Filter Schools</h6>
+              <div class="input-field">
+                <input id="search" type="search" placeholder="Search for schools by name or address">
+                <label class="label-icon" for="search"><i class="material-icons" style="padding-right: 1em;">search</i></label>
+                <i class="material-icons">close</i>
+              </div>
+              <div class="row">
+                <div class="col sm2">
+                  <label>
+                    <input class="level-filter" type="checkbox" checked="checked" value="Level 1+"/>
+                    <span>Level 1+</span>
+                  </label>
+                </div>
+                <div class="col sm2">
+                  <label>
+                    <input class="level-filter" type="checkbox" checked="checked" value="Level 1"/>
+                    <span>Level 1</span>
+                  </label>
+                </div>
+                <div class="col sm2">
+                  <label>
+                    <input class="level-filter" type="checkbox" checked="checked" value="Level 2+"/>
+                    <span>Level 2+</span>
+                  </label>
+                </div>
+                <div class="col sm2">
+                  <label>
+                    <input class="level-filter" type="checkbox" checked="checked" value="Level 2"/>
+                    <span>Level 2</span>
+                  </label>
+                </div>
+                <div class="col sm2">
+                  <label>
+                    <input class="level-filter" type="checkbox" checked="checked" value="Level 3"/>
+                    <span>Level 3</span>
+                  </label>
+                </div>
+                <div class="col sm2">
+                  <label>
+                    <input class="level-filter" type="checkbox" checked="checked" value="Inability to Rate"/>
+                    <span>Inability to Rate</span>
+                  </label>
                 </div>
               </div>
             </div>
+            {% if schools %}
+            <ul class="collapsible">
+              {% for school in schools %}
+              <li id="{{school.id}}" class="school-record">
+                <div class="collapsible-header">
+                  <i class="material-icons">school</i>
+                  <span style="font-weight: bold; position: right;">{{school.name}} - {{school.sqrp_rating}}</span>
+                </div>
+                <div class="collapsible-body">
+                  <div class="card horizontal">
+                    <div class="card-image">
+                      {% with 'img/'|add:school.id|add:'.jpg' as school_photo %}
+                      <img src="{% static school_photo %}" style="width: 100%; height: 100%;">
+                      {% endwith %}
+                    </div>
+                    <div class="card-stacked">
+                      <div class="card-content">
+                        <p style="font-weight: bold;">{{school.name}}</p>
+                        <p>{{school.address}}</p>
+                        <p>{{school.city}}, IL {{school.zip}}</p>
+                        <p>{{school.phone}}</p>
+                        <br>
+                        <p>2018-19 CPS Rating: {{school.cps_rating}}</p>
+                        <p>SQRP Rating: {{school.sqrp_rating}}</p>
+                        <p>SQRP Points: {{school.sqrp_points}}</p>
+                      </div>
+                      <div class="card-action">
+                        {% if school.website %}
+                        <a href="{{school.website}}" target="_blank"><i class="fas fa-globe"></i></a>
+                        {% endif %}
+                        {% if school.facebook %}
+                        <a href="{{school.facebook}}" target="_blank"><i class="fab fa-facebook-square"></i></a>
+                        {% endif %}
+                        {% if school.twitter %}
+                        <a href="{{school.twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          <div id="biasScore">
+            <div class="row" style="text-align: center;">
+              <h1 style="font-size: 10em; font-weight: bold; color:#00684D; padding: 0; margin: 0;">{{bias_score}}</h1>
+              <br><span style="font-size: 2em; color:lightslategray; font-style: italic;">2018-19 CPS Score: 53</span>
+            </div>
+            <div class="row">
+              <p style="padding-top: 0;">
+                <h6 style="font-weight: bold;">Explanation</h6>
+                {{bias_score_explanation}}
+              </p>
+            </div>
+            <div class="row">
+              <h6 style="font-weight: bold; margin-bottom: 0; padding-bottom: 0;">Regression Plots</h6><br>
+              <img src="{% static 'img/bias_score_viz.svg' %}" alt="Linear regression plots" style="width: 100%;">
+            </div>
+          </div>
         </div>
+    </div>
     </div>
     <script src="{% static 'js/materialize.min.js' %}" type="text/javascript"></script>
       {% if schools %}
@@ -304,13 +340,9 @@
       mapboxgl.accessToken = 'pk.eyJ1IjoibGF1bmEiLCJhIjoiY2l5aTVjYnBzMDYwMjMyb2U2b3QyNmp2YyJ9.hzRZq1zwJuLog74b9ZJ0QQ';
       var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/launa/ck7mur4ax0esd1imkp3ocnhil/draft',
-        center: [-87.6298, 41.8781],
-        zoom: 9
-      });
-
-      map.on('load', function () {
-        map.resize();
+        style: 'mapbox://styles/launa/ck7mur4ax0esd1imkp3ocnhil',
+        center: [-87.6298, 41.84],
+        zoom: 9.5
       });
 
       // Parse schools into JSON
@@ -375,30 +407,58 @@
           $('.pushpin').pushpin();
         });
 
-        $('#search').keydown(function (e) {
-            // Parse live user input
-            var val = $("#search").first().val();
-            console.log("The value is " + val);
+        var school_dict = JSON.parse(document.getElementById('markerSource').textContent);
+        const total_num_levels = 6
+        var display_levels = {
+          "Level 1+": true,
+          "Level 1": true,
+          "Level 2+": true,
+          "Level 2": true,
+          "Level 3": true,
+          "Inability to Rate": true
+        };
 
-            // Display all school records if input is null or empty
-            if(!val){
-              $(".school-record").show();
-              return;
+        function evaluateFilters(){
+          // Parse user input from search box
+          var val = $("#search").first().val();
+          console.log("The value is " + val);
+
+          // Display all school records if input is null or empty and no levels are unchecked
+          if(!val && display_levels.length == total_num_levels){
+            $(".school-record").show();
+            return;
+          }
+
+          // Otherwise, return schools with appropriate levels and whose names or addresses match input
+          var re = new RegExp(".*" + val + ".*", "i");
+          var filtered_arr = $.grep(school_dict, function(s){
+            if(display_levels[s.sqrp_rating] && (re.test(s.name) || re.test(s.address))){
+              $("#" + s.id).show();
+              return s;
             }
+            else{
+              $("#" + s.id).hide();
+            }
+          })
+          console.log(filtered_arr)
+        };
 
-            // Otherwise, return schools whose names or addresses match input
-            var re = new RegExp(".*" + val + ".*", "i");
-            var school_dict = JSON.parse(document.getElementById('markerSource').textContent);
-            var filtered_arr = $.grep(school_dict, function(s){
-              if(re.test(s.name) || re.test(s.address)){
-                $("#" + s.id).show();
-                return s;
-              }
-              else{
-                $("#" + s.id).hide();
-              }
-            })
-            console.log(filtered_arr)
+        $('.level-filter').click(function(){
+            var level = $(this).val()
+            console.log("Level Changed: " + level)
+
+            if($(this).prop("checked") == true){
+              display_levels[level] = true
+              evaluateFilters();
+            }
+            else if($(this).prop("checked") == false){
+              display_levels[level] = false
+              evaluateFilters();
+            }
+        });
+    
+        $('#search').keydown(function (e) {
+            evaluateFilters();
         });
       </script>
   </body>

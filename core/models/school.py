@@ -21,9 +21,7 @@ class School():
         Inputs:
             record: (dict) one record from the sqrp table
             policy: an SQRP object
-
         '''
-
         self.name = record["school_name"]
         self.id = record["school_id"]
         self.latitude = record["school_latitude"]
@@ -32,11 +30,14 @@ class School():
         self.city = record["city"]
         self.state = record["state"]
         self.zip = record["zip"]
-        self.phone = record["phone"]
-        self.facebook = record["facebook"]
-        self.twitter = record["twitter"]
-        self.youtube = record["youtube"]
-        self.pinterest = record["pinterest"]
+        rawPhone = record["phone"]
+        self.phone = "({}) {}-{}".format(rawPhone[0:3], rawPhone[3:6], 
+                                         rawPhone[6:])
+        self.website = None if record["website"] == "nan" else record["website"]
+        self.facebook = None if record["facebook"] == "nan" else record["facebook"]
+        self.twitter = None if record["twitter"] == "nan" else record["twitter"]
+        self.youtube = None if record["youtube"] == "nan" else record["youtube"]
+        self.pinterest = None if record["pinterest"] == "nan" else record["pinterest"]
         self.cps_rating = record["current_sqrp_rating"]
         self.weights = {k:0 for k in ALL_INDICATORS}
         points = PointCalculator(self, record, policy).points

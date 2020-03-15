@@ -6,10 +6,12 @@
 #
 #----------------
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 BIAS_SCORE_EXPLANATION = '''
@@ -85,7 +87,8 @@ def create_plots(df):
                 color=colors[2], ax=ax3)
     ax3.set(xlabel="Special Education", ylabel="", ylim=(0,5))
 
-    plt.savefig("./sqrp/static/img/bias_score_viz.svg")
+    plt.tight_layout()
+    plt.savefig("./sqrp/static/img/bias_score_viz.svg", bbox_inches="tight")
     plt.close("all")
 
 
@@ -108,5 +111,7 @@ def create_histogram(ratings_lst):
              "Inability to Rate"]
     sns.countplot(ratings_lst, order=order, palette=colors)
     plt.ylabel("Number of Schools")
-    plt.savefig("./sqrp/static/img/level_dist.svg",bbox_inches='tight')
+
+    plt.tight_layout()
+    plt.savefig("./sqrp/static/img/level_dist.svg", bbox_inches="tight")
     plt.close("all")
