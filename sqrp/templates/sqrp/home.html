@@ -279,7 +279,7 @@
                   <div class="card horizontal">
                     <div class="card-image">
                       {% with 'img/'|add:school.id|add:'.jpg' as school_photo %}
-                      <img src="{% static school_photo %}" style="width: 100%; height: 100%;">
+                      <img src="#" data-src="{% static school_photo %}" style="width: 100%; height: 100%;">
                       {% endwith %}
                     </div>
                     <div class="card-stacked">
@@ -337,7 +337,7 @@
       {% endif %}
     <script id="map">
       // Initialize map
-      mapboxgl.accessToken = 'pk.eyJ1IjoibGF1bmEiLCJhIjoiY2l5aTVjYnBzMDYwMjMyb2U2b3QyNmp2YyJ9.hzRZq1zwJuLog74b9ZJ0QQ';
+      mapboxgl.accessToken = 'pk.eyJ1IjoibGF1bmEiLCJhIjoiY2l5aTVjYnBzMDYwMjMyb2U2b3QyNmp2YyJ9.hzRZq1zwJuLog74b9ZJ0QQ'; // would store as a secret in a real production project
       var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/launa/ck7mur4ax0esd1imkp3ocnhil',
@@ -444,6 +444,7 @@
         };
 
         $('.level-filter').click(function(){
+          // Update list of schools when level filter occurs
             var level = $(this).val()
             console.log("Level Changed: " + level)
 
@@ -457,8 +458,16 @@
             }
         });
     
-        $('#search').keydown(function (e) {
+        $('#search').keydown(function() {
+          // Update list of schools when name or address filter occurs
             evaluateFilters();
+        });
+
+        $('.collapsible-header').click(function(){
+          // Lazily load school images
+          var img = $(this).next().find("img");
+          var datasrc = img.attr("data-src");
+          img.prop("src", datasrc);
         });
       </script>
   </body>
