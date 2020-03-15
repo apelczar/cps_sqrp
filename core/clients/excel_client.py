@@ -1,14 +1,25 @@
+'''
+excel_client.py
+-------
+Parse Excel file data from the Chicago Data Portal.
+'''
+
 import pandas as pd
 import re
 import sqlite3
 
 FILENAME = "../data/Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 
-
 def make_final_df():
     '''
-    Creates the final dataframe from the High School and Combination
-        Schools pages on the SQRP Excel spreadsheet.
+    Create the final dataframe from the High School and Combination
+    Schools pages on the SQRP Excel spreadsheet.
+
+    Inputs:
+        None
+
+    Returns:
+        (pd.DataFrame): the cleaned data
     '''
     hs_data = load_and_clean_file(2)
     combo_school_data = load_and_clean_file(3)
@@ -16,11 +27,16 @@ def make_final_df():
 
     return final_df
 
+
 def load_and_clean_file(sheet_name):
     '''
-    Loads and cleans data. Returns a Pandas dataframe.
+    Load and clean data from an Excel spreadsheet.
+
     Inputs:
         sheet_name (int): the sheet number to be loaded/cleaned
+
+    Returns:
+        (pd.DataFrame): the cleaned data
     '''
     hs_data = load_data(sheet_name)
     pared_df = pare_df(hs_data, sheet_name)
@@ -30,10 +46,13 @@ def load_and_clean_file(sheet_name):
 
 def load_data(sheet_name): 
     '''
-    Loads spreadsheet from row 4 down.
+    Load data from an Excel spreadsheet from row 4 down.
+
     Inputs:
         sheet_name (int): the sheet number to be loaded/cleaned
 
+    Returns:
+        (pd.DataFrame): the loaded data
     '''
     df = pd.read_excel(FILENAME, sheet_name, header=[1, 2])
     df.columns = [": ".join(col).strip() for col in df.columns.values]
@@ -41,13 +60,18 @@ def load_data(sheet_name):
         df.drop(df.columns[74], axis=1, inplace=True)
     return df
 
+
 def initial_clean(hs_data, sheet_name):
     '''
-    Cleans the column names of excess spaces for easier processing.
+    Remove excess spaces from column names for easier processing.
+
     Inputs:
-        hs_data: a Pandas dataframe
-        sheet_name: sheet number from original Excel spreadsheet.
-            2 indicates high school data and 3 indicates combo school data
+        hs_data (pd.DataFrame): the loaded data
+        sheet_name: sheet number from original Excel spreadsheet. The number
+            2 indicates high school data and 3 indicates combo school data.
+
+    Returns:
+        (pd.DataFrame): the cleaned data
     '''
     cols_to_keep = []
     for col in hs_data.columns:
@@ -67,14 +91,18 @@ def initial_clean(hs_data, sheet_name):
         clean_names[col] = col_clean
     return clean_names
 
+
 def pare_df(hs_data, sheet_name):
     '''
     Specifies columns to keep and cleans their names.
-    Inputs:
-        hs_data: a Pandas dataframe created from the Excel file
-        sheet_name: sheet number from original Excel spreadsheet.
-            2 indicates high school data and 3 indicates combo school data
 
+    Inputs:
+        hs_data (pd.DataFrame): data loaded from the Excel file
+        sheet_name: sheet number from original Excel spreadsheet. The number
+            2 indicates high school data and 3 indicates combo school data.
+
+    Returns:
+        (pd.DataFrame): the pared data
     '''
     names_dict = initial_clean(hs_data, sheet_name)
     cols_to_keep = list(names_dict.keys())
@@ -84,15 +112,18 @@ def pare_df(hs_data, sheet_name):
     return pared_df
 
 
-def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
+def rename_cols(pared_df, sheet_name):
     '''
-    Assigns new names to all columns
+    Assigns new names to all columns.
+
     Inputs:
-        pared_df: a Pandas dataframe with trimmed column names
+        pared_df (pd.DataFrame): a Pandas dataframe with trimmed column names
         sheet_name: sheet number from original Excel spreadsheet.
             2 indicates high school data and 3 indicates combo school data
-    '''
 
+    Returns:
+        (pd.DataFrame): a DataFrame with corrected column names
+    '''
     var_names = {"School ID": "school_id",
     "School Name": "school_name",
     "SAT11 Cohort Growth Percentile": "grade_11_sat_3yr_cohort_growth",
@@ -122,6 +153,3 @@ def rename_cols(pared_df, sheet_name): # ADDED SHEET NAME AS INPUT
     final_df = pared_df.rename(columns=var_names)
 
     return final_df
-
-
-

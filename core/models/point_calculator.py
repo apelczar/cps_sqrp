@@ -1,5 +1,8 @@
 '''
 point_calculator.py
+-----------
+Counts the number of points earned by a school under a given SQRP model.
+These points are used to determine the final level/ranking of the school. 
 '''
 from core.models.reassignments import NON_ASSESSMENT_REASSIGNMENT
 from core.models.indicators import (ATTAINMENT_INDICATORS, 
@@ -15,7 +18,8 @@ class PointCalculator():
 
     def calculate_points(self):
         '''
-        Calculate a rating under the user's policy
+        Calculate the number of points earned under the user's policy.
+
         Inputs:
             indicators: the school's record from the SQRP points database
             policy: an SQRP object

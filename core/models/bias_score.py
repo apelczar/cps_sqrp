@@ -1,10 +1,9 @@
-#----------------
-#
-# Calculate the bias score of a policy
-# For more information on how the bias score
-# was developed, see <file name>
-#
-#----------------
+'''
+bias_score.py
+-----------
+Calculate the bias score of a SQRP. For more information on how the bias score
+was developed, please see "bias_score_dev.pdf" under "../core/docs."
+'''
 
 import matplotlib
 matplotlib.use('SVG')
@@ -41,7 +40,6 @@ def calculate_bias_score(df):
         (int) the bias score
         also generates plots through a call to create_plots
     '''
-
     #Filter schools
     df = df[df["sqrp_points"] != 0]
     df = df.dropna()
@@ -72,7 +70,6 @@ def create_plots(df):
     Returns:
         saves a file called "bias_score_viz.svg"
     '''
-
     sns.set()
 
     colors = ["#00956E", "#8A1A9C", "#EE7624"]
@@ -94,13 +91,15 @@ def create_plots(df):
 
 def create_histogram(ratings_lst):
     '''
-    Create a histogram for the distribution of schools across levels.
+    Creates a histogram for the distribution of schools across levels and then
+    saves that histogram as an SVG file called "level_dist.svg" in the project
+    directory.
 
     Inputs:
-        ratings_lst: a list of all the ratings
+        ratings_lst (list): a list of all the ratings
 
     Returns:
-        saves a file called "level_dist.svg"
+        None
     '''
     sns.set()
 

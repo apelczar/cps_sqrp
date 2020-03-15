@@ -1,3 +1,10 @@
+'''
+apiclient.py
+-------
+Facilitates queries against the Socrata Open Data API (SODA) endpoint hosted
+by the Chicago Data Portal.
+'''
+
 import json
 import requests
 import sqlite3
@@ -7,40 +14,61 @@ PROGRESS_REPORT_URL = "https://data.cityofchicago.org/resource/dw27-rash.json"
 SCHOOL_PROFILE_URL = "https://data.cityofchicago.org/resource/kh4r-387c.json"
 
 
-def get_data(url, col_names, cols_dict):
+def get_data(base_url, col_names, cols_dict):
     '''
-    Calls the API endpoint using url, generates a query with specified columns, 
-    and returns a Pandas dataframe.
+    Calls an API endpoint for a high school education resource. Filters the data
+    according to the given column names. Reads the JSON of the response body
+    into a Pandas DataFrame.
+
     Inputs:
-      col_names: a list of column names to include in the dataframe
-      cols_dict: a dictionary of column names and data types
+      col_names (list of strings): a list of column names for the DataFrame
+      cols_dict (dict<string, string>): a dictionary with column names as keys
+                                        and data types as values
+
+    Returns:
+        (pd.DataFrame): a DataFrame representing the parsed response payload
     '''
     attributes = ", ".join(col_names)
     query = "?$query=SELECT " + attributes + " WHERE primary_category = 'HS'"
-    request = requests.get(url + query)
+    request = requests.get(base_url + query)
     return pd.read_json(request.text, dtype=cols_dict)
 
-def get_social_media_data():
-  '''
-  Calls School Profile API and retrieves information on school social
-  media information. Returns a Pandas dataframe.
-  '''
-  social_media_vars = ["school_id",
-                       "facebook",
-                       "twitter",
-                       "youtube",
-                       "pinterest"]
 
-  social_media_cols = {"facebook": str,
+def get_social_media_data():
+    '''
+    Queries the School Profile API for social media data.
+      
+    Inputs:
+        None
+    Returns:
+        (pd.DataFrame): a DataFrame with school FaceBook, Twitter, YouTube, and
+                        Pinterest records
+    '''
+    social_media_vars = ["school_id", 
+                         "facebook",
+                         "twitter",
+                         "youtube", 
+                         "pinterest"]
+                       
+    social_media_cols = {"facebook": str,
                        "twitter": str,
                        "youtube": str,
                        "pinterest": str}
-  return get_data(SCHOOL_PROFILE_URL, social_media_vars, social_media_cols)
+                       
+    return get_data(SCHOOL_PROFILE_URL, social_media_vars, social_media_cols)
+
 
 def get_progress_report_data():
     '''
-    Calls School Progress Report API and retrieves data on attainment and 
-    location. Returns a Pandas dataframe.
+    Queries the School Progress Report API for test score attainment
+    and location data.
+
+    Inputs:
+        None
+      
+    Returns:
+        (pd.DataFrame): a DataFrame with school address and PSAT and SAT
+                        test attainment records
     '''
     progress_vars = ["school_id",
                     "school_latitude",
@@ -72,7 +100,6 @@ def get_progress_report_data():
                   progress_cols)
     bins = pd.IntervalIndex.from_tuples([(0, 10), (10, 40), (40, 70), 
         (70, 90), (90, 101)], closed="left")
-    labs = [1, 2, 3, 4, 5]
     for var in attainment_vars:
         x = pd.cut(df[var].to_list(), bins=bins)
         x.categories = [1, 2, 3, 4, 5]
@@ -83,10 +110,16 @@ def get_progress_report_data():
 
 def get_profile_data():
     '''
-    Calls School Profile API and retrieves data on enrollment. Returns a 
-    Pandas dataframe.
-    '''
+    Queries the School Profile API for student enrollment data.
 
+    Inputs:
+        None
+      
+    Returns:
+        (pd.DataFrame): a DataFrame with enrollment rates for low-income,
+                        English language learner, special education, and total
+                        student populations
+    '''
     enrollment_vars = ["school_id", 
                        "student_count_total", 
                        "student_count_low_income",

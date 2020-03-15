@@ -1,7 +1,7 @@
 '''
 dbclient.py
 -----------
-Facilitates operations against local sqlite3 database.
+Facilitates operations against the local sqlite3 database.
 '''
 
 from core.clients import apiclient
@@ -33,7 +33,6 @@ def setup():
     sqrp_excel = excel_client.make_final_df()
     sqrp_df = sqrp_excel.merge(progress_df, on="school_id", \
               how="inner").merge(social_media, on="school_id", how="inner")
-    #sqrp_df = sqrp_df.merge(social_media, on="school_id", how="inner")
     insert_records(profile_df, 'enrollment')
     insert_records(sqrp_df, 'sqrp')
 
@@ -48,12 +47,12 @@ def build_tables():
     Returns:
         None
     '''
-    con = sqlite3.connect(DATABASE_PATH)
-    u = con.cursor()
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
     with open('core/scripts/setup.sql') as f:
         commands = f.read()
-        u.executescript(commands)
-    con.close()
+        cursor.executescript(commands)
+    conn.close()
 
 
 def insert_records(df, table_name):
@@ -69,9 +68,9 @@ def insert_records(df, table_name):
     Returns:
         None
     '''
-    con = sqlite3.connect(DATABASE_PATH)
-    df.to_sql(table_name, con=con, index=False, if_exists='append')
-    con.close()
+    conn = sqlite3.connect(DATABASE_PATH)
+    df.to_sql(table_name, con=conn, index=False, if_exists='append')
+    conn.close()
 
 
 def get_records():

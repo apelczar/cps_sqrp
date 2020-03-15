@@ -1,9 +1,9 @@
 '''
 sqrp.py
 -------
-Stores relative weights for each of the SQRP indicators and maintains a
-reference to the default relative weights associated with the 2018-19
-CPS indicators.
+Represents an SQRP model. Stores relative weights for each of the SQRP 
+indicators. Also maintains a reference to the default relative weights 
+associated with the 2018-19 CPS indicators.
 '''
 
 DEFAULT_RELATIVE_WEIGHTS = {
@@ -267,12 +267,10 @@ class SQRP(object):
     @property
     def base_weight(self):
         '''
-        Use the relative weights of all indicators to calculate the numerical
-        weight corresponding to a relative weight of 1. Defaults to 1/60, the
-        base weight for the default relative weights.
-
-        Returns:
-            (float): a value between 0 and 1
+        The indicator base weight, expressed as a float between 0.0 and 1.0.
+        Uses the relative weights of all indicators to calculate the
+        numerical weight corresponding to a relative weight of 1. Defaults to 
+        1/60, the base weight for the default relative weights.
         '''
         return 1 / sum(self.relative_weights.values()) if sum(
             self.relative_weights.values()) else 0

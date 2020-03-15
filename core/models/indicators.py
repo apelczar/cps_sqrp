@@ -1,7 +1,7 @@
 '''
 indicators.py
 -------------
-Measures used by CPS to evaluate school quality.
+Measures used by CPS to evaluate school quality in the SQRP model.
 '''
 
 ALL_INDICATORS = ["five_essentials_survey",

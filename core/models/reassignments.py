@@ -1,5 +1,8 @@
 '''
 reassignments.py
+-----------
+Functions for redistributing indicator weights when that indicator has not
+been included in the user SQRP model.
 '''
 from core.models.indicators import ASSESSMENT_INDICATORS
 
