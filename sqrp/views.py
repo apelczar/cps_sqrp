@@ -1,3 +1,10 @@
+'''
+views.py
+--------------
+Relays SQRP models created in the web interface to the backend for processing
+and then returns the rendered results back to the interface.
+'''
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
@@ -5,13 +12,25 @@ from .forms import SQRPModelConfigForm
 
 import sys
 import json
-#sys.path.append('..')
 from core import analyzesqrp
 from core.models.sqrp import SQRP, DEFAULT_RELATIVE_WEIGHTS
 from core.models.indicators import ALL_INDICATORS
 from core.models.bias_score import BIAS_SCORE_EXPLANATION
 
 def home(request):
+    '''
+    Renders the home page/main landing page of the application. When the page
+    first loads following a GET request, the default relative weights from the
+    Chicago Public Schools 2018-2019 school year are used.  Subsequent POST
+    requests by the user update the page with user-selected weights.
+
+    Inputs:
+        (django.HttpRequest): the HTTP request for the home page
+
+    Returns:
+        (django.HttpResponse): the HttpResponse with the rendered "home.html"
+                               template
+    '''
     try:
         if request.method == "POST":
             weights = request.POST

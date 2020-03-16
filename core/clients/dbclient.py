@@ -16,9 +16,10 @@ DATABASE_PATH = "db.sqlite3"
 
 def setup():
     '''
-    Creates the 'sqrp' and 'enrollment' tables in the sqlite3 database and
-    then populates the tables with data extracted and cleaned from the Chicago
-    Public School District's API sources and Excel files(s).
+    Rebuilds or newly creates the 'sqrp' and 'enrollment' tables in the 
+    sqlite3 database and then populates those tables with data extracted and 
+    cleaned from the Chicago Public School District's API sources and 
+    Excel files(s).
 
     Inputs:
         None
@@ -96,3 +97,9 @@ def get_records():
                                    conn, index_col="school_id")
     conn.close()
     return schools, enrollment
+
+
+if __name__ == "__main__":
+    print("Rebuilding sqrp and enrollment tables in database 'db.sqlite3'")
+    setup()
+    print("Tables rebuilt successfully")

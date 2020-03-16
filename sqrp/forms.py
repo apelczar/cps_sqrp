@@ -1,7 +1,18 @@
+'''
+forms.py
+--------------
+Custom forms to use for the Django web interface.
+'''
+
 from django import forms
 from django.forms.widgets import NumberInput
 
 class SQRPModelConfigForm(forms.Form):
+    '''
+    Inherits from the django.forms.Form class. Sets a series of
+    integer input widgets as fields. Each widget represents a school
+    indicator that may be weighted from 0 to 6, inclusive.
+    '''
     five_essentials_survey = forms.IntegerField(
                 label="Five Essentials Survey", 
                 widget=NumberInput(attrs={

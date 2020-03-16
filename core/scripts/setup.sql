@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS enrollment;
+
+DROP TABLE IF EXISTS sqrp;
+
 CREATE TABLE enrollment
 	(school_id varchar(10),
 		percent_low_income decimal,
