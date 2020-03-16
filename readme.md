@@ -17,7 +17,7 @@
 Python-3.8.1
 
 **VM Setup:**  
-Note: For optimal performance, it is recommended to run the project outside
+*Note: For optimal performance, it is recommended to run the project outside
 the VM, through an IDE like Visual Studio Code or PyCharm.
 
 (1) Ensure that Python-3.8.1 has been installed in the 'usr/local/bin' folder.
@@ -34,13 +34,14 @@ To deactivate it, type `deactivate`.
 
 (4) Launch the Django web application from the project root with the
 command `python3 manage.py runserver`. Once the server is running,
-navigate to your local webhost, `http://127.0.0.1:8000/`, in your broswer of 
+navigate to your local webhost (e.g., `http://127.0.0.1:8000/`) in your browser of 
 choice. The page usually takes 5-10 seconds to load due to the presence of a 
 map and the dynamic creation of SVG plots through the matplotlib package. Future
 iterations of this project would attempt to cut down this load time. There is 
-also a bug in Ubuntu in which the Django server states that the port is
-already in use. To resolve this error should it arise, kill the associated processes 
-with `sudo fuser -k 8000/tcp`. To stop the server at any time, press `Ctrl-C`.
+also a bug in Ubuntu in which the Django server throws an exception stating that 
+the port is already in use. To resolve this error should it arise, kill the 
+associated process with `sudo fuser -k 8000/tcp`. To stop the server at any 
+time, press `Ctrl-C`.
 
 (5) Optionally test the creation and population of the database tables by 
 running the command `python3 -m core.clients.dbclient` from the project root.
