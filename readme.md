@@ -17,6 +17,9 @@
 Python-3.8.1
 
 **VM Setup:**  
+Note: For optimal performance, it is recommended to run the project outside
+the VM, through an IDE like Visual Studio Code or PyCharm.
+
 (1) Ensure that Python-3.8.1 has been installed in the 'usr/local/bin' folder.
 (Other locations can be used, but the script in the next step will have to be
 modified accordingly.) If building Python [on Ubuntu from source](https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/),
@@ -34,11 +37,8 @@ command `python3 manage.py runserver`. Once the server is running,
 navigate to your local webhost, `http://127.0.0.1:8000/`, in your broswer of 
 choice. The page usually takes 5-10 seconds to load due to the presence of a 
 map and the dynamic creation of SVG plots through the matplotlib package. Future
-iterations of this project would attempt to cut down this load time. For optimal
-performance, it is recommended to launch the project from Visual Studio code
-instead of running it in the VM.
-
-There is also a bug in Ubuntu in which the Django server states that the port is
+iterations of this project would attempt to cut down this load time. There is 
+also a bug in Ubuntu in which the Django server states that the port is
 already in use. To resolve this error should it arise, kill the associated processes 
 with `sudo fuser -k 8000/tcp`. To stop the server at any time, press `Ctrl-C`.
 
@@ -57,8 +57,8 @@ The backend program takes those inputs, generates a rating system based on those
 inputs, and assigns each school a rating accordingly. If inputs are missing for
 a particular school, the algorithm reassigns those weights to a different inputs
 (for details about this reassignment, see the “Reassignment Logic” section of
-the Appendix). Finally, the backend calculates a bias score for the user's SQRP
-model, which communicates how well schools’ scores align with the 
-demographics of their student bodies. The interface returns the bias score for 
-the specified policy along with individual ratings for each of the schools and a
-series of three regression plots.
+the Appendix in the project documentation). Finally, the backend calculates 
+a bias score for the user's SQRP model, which communicates how well schools’ 
+scores align with the demographics of their student bodies. The interface 
+returns the bias score for the specified policy along with individual ratings 
+for each of the schools and a series of three regression plots.
