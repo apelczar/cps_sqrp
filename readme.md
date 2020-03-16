@@ -16,7 +16,11 @@
 **Language Requirements:**  
 Python-3.8.1
 
-**Required Libraries:**  
+**Required Libraries:**
+*Installed with apt-get command if using VM* 
+libsqlite3-dev
+
+*Installed via script using requirements.txt*  
 asgiref==3.2.3  
 astroid==2.3.3  
 certifi==2019.11.28  
@@ -49,8 +53,7 @@ wrapt==1.11.2
 xlrd==1.2.0
 
 **VM Setup:**  
-*Note: For optimal performance, it is recommended to run the project outside
-the VM, through an IDE like Visual Studio Code or PyCharm.*
+*Note: For optimal performance, it is recommended to run the project outside the VM, through an IDE like Visual Studio Code or PyCharm.*
 
 (1) Ensure that Python-3.8.1 has been installed in the 'usr/local/bin' folder.
 (Other locations can be used, but the script in the next step will have to be
