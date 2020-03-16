@@ -1,12 +1,12 @@
 '''
 bias_score.py
 -----------
-Calculate the bias score of a SQRP. For more information on how the bias score
+Calculate the bias score of an SQRP. For more information on how the bias score
 was developed, please see "bias_score_dev.pdf" under "../core/docs."
 '''
 
 import matplotlib
-matplotlib.use('SVG')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np

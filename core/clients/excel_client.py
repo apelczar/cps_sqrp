@@ -8,7 +8,7 @@ import pandas as pd
 import re
 import sqlite3
 
-FILENAME = "../data/Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
+FILENAME = "core/data/Accountability_SQRPratings_2018-2019_SchoolLevel.xls"
 
 def make_final_df():
     '''

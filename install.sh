@@ -1,18 +1,18 @@
 #!/bin/bash 
 
 # 1. First check to see if the correct version of Python is installed on the local machine 
-echo "Checking Python version..."
-REQ_PYTHON_V="381"
+echo "Checking for installed Python version in '/usr/local/bin/python3.8'"
 
-ACTUAL_PYTHON_V=$(python -c 'import sys; version=sys.version_info[:3]; print("{0}{1}{2}".format(*version))')
-ACTUAL_PYTHON3_V=$(python3 -c 'import sys; version=sys.version_info[:3]; print("{0}{1}{2}".format(*version))')
+REQ_PYTHON_V="381"
+ACTUAL_PYTHON_V=$("/usr/local/bin/python3.8" -c 'import sys; version=sys.version_info[:3]; print("{0}{1}{2}".format(*version))')
+ACTUAL_PYTHON3_V=$("/usr/local/bin/python3.8" -c 'import sys; version=sys.version_info[:3]; print("{0}{1}{2}".format(*version))')
 
 if [[ $ACTUAL_PYTHON_V > $REQ_PYTHON_V ]] || [[ $ACTUAL_PYTHON_V == $REQ_PYTHON_V ]];  then 
-    PYTHON="python"
+    PYTHON="/usr/local/bin/python3.8"
 elif [[ $ACTUAL_PYTHON3_V > $REQ_PYTHON_V ]] || [[ $ACTUAL_PYTHON3_V == $REQ_PYTHON_V ]]; then 
-    PYTHON="python3"
+    PYTHON="/usr/local/bin/python3.8"
 else
-    echo -e "\tPython 3.8.1 is not installed on this machine. Please install Python 3.8.1 before continuing."
+    echo -e "\tPython 3.8.1 is not installed in the expected folder on this machine. Please install Python 3.8.1 before continuing."
     exit 1
 fi
 
@@ -41,6 +41,6 @@ if [[ ! -e "requirements.txt" ]]; then
 fi
 
 source env/bin/activate
-pip install -r requirements.txt
+env/bin/pip install -r requirements.txt
 deactivate 
 echo -e "Done."

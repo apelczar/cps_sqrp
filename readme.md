@@ -13,27 +13,41 @@
 **Language Requirements:**  
 Python-3.8.1
 
-**Setup:**  
-(1) Run the command `sh install.sh` from the project root to verify the
-current edition of Python, create a new virtual environment, and install all
-required packages in that virtual environment.
+**VM Setup:**  
+(1) Ensure that Python-3.8.1 has been installed in the 'usr/local/bin' folder.
+(Other locations can be used, but the script in the next step will have to be
+modified accordingly.) If building Python [on Ubuntu from source](https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/),
+the package 'libsqlite3-dev' must be installed first with `apt-get install libsqlite3-dev`.
 
-(2) To launch the Django web application, open a new terminal window from the
-project root, enter the command `python3 manage.py runserver`, and then
-navigate to your local host, `http://127.0.0.1:8000/`, in your web broswer of 
+(2) Run the command `bash install.sh` from the project root. The script verifies the
+current installation of Python; creates a new virtual environment, 'env'; and
+then installs all required packages in that environment using the requirements.txt file.
+
+(3) Activate the virtual environment with the command `source env/bin/activate`.
+To deactivate it, type `deactivate`.
+
+(4) Launch the Django web application from the project root with the
+command `python3 manage.py runserver`. Once the server is running,
+navigate to your local webhost, `http://127.0.0.1:8000/`, in your broswer of 
 choice. The page usually takes 5-10 seconds to load due to the presence of a 
 map and the dynamic creation of SVG plots through the matplotlib package. Future
-iterations of this project would attempt to cut down on this load time.
+iterations of this project would attempt to cut down this load time. For optimal
+performance, it is recommended to launch the project from Visual Studio code
+instead of running it in the VM.
 
-(3) To optionally test the creation and population of the database tables, 
-run the command `python3 -m core.clients.dbclient` from the project root.
+There is also a bug in Ubuntu in which the Django server states that the port is
+already in use. To resolve this error should it arise, kill the associated processes 
+with `sudo fuser -k 8000/tcp`. To stop the server at any time, press `Ctrl-C`.
+
+(5) Optionally test the creation and population of the database tables by 
+running the command `python3 -m core.clients.dbclient` from the project root.
 It deletes the tables if they exist and then rebuilds them again using the 
 `setup()` function in `dbclient.py`.
 
 **Description:**  
-Through the web interface, a user may adjust slider widgets to set the 
-relative weights for each school indicator. (The page is loaded with the weights
-utilized in the 2018-2019 school year.) If the user does not want to include an
+In the web interface, a user may adjust slider widgets to set the 
+relative weights for each school indicator. (The page is initialized with the
+weights from the 2018-2019 school year.) If the user does not want to include an
 input in the rating system, the user should leave that input’s weight as zero.
 
 The backend program takes those inputs, generates a rating system based on those
