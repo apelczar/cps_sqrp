@@ -10,7 +10,7 @@
 ![alt text](sqrp/static/img/View_Bias_Score.JPG "View Bias Score")
 
 **Documentation:**  
-[Project Overview](apelczar-launagreer-lilygrier.pdf)
+[Project Overview](apelczar-launagreer-lilygrier.pdf)  
 [Bias Score Development](core/docs/bias_score_dev.pdf)
 
 **Language Requirements:**  
