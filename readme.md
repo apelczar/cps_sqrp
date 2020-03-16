@@ -16,9 +16,41 @@
 **Language Requirements:**  
 Python-3.8.1
 
+**Required Libraries:**  
+asgiref==3.2.3  
+astroid==2.3.3  
+certifi==2019.11.28  
+chardet==3.0.4  
+colorama==0.4.3  
+cycler==0.10.0  
+Django==3.0.3  
+idna==2.9  
+isort==4.3.21  
+joblib==0.14.1  
+kiwisolver==1.1.0  
+lazy-object-proxy==1.4.3  
+matplotlib==3.2.0  
+mccabe==0.6.1  
+numpy==1.18.1  
+pandas==1.0.1  
+pylint==2.4.4  
+pyparsing==2.4.6  
+python-dateutil==2.8.1  
+pytz==2019.3  
+requests==2.23.0  
+scikit-learn==0.22.2.post1  
+scipy==1.4.1  
+seaborn==0.10.0  
+six==1.14.0  
+sklearn==0.0  
+sqlparse==0.3.0  
+urllib3==1.25.8  
+wrapt==1.11.2  
+xlrd==1.2.0
+
 **VM Setup:**  
 *Note: For optimal performance, it is recommended to run the project outside
-the VM, through an IDE like Visual Studio Code or PyCharm.
+the VM, through an IDE like Visual Studio Code or PyCharm.*
 
 (1) Ensure that Python-3.8.1 has been installed in the 'usr/local/bin' folder.
 (Other locations can be used, but the script in the next step will have to be
