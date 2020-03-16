@@ -10,8 +10,11 @@
 ![alt text](sqrp/static/img/View_Bias_Score.JPG "View Bias Score")
 
 
-**Setup:**
-(1) Run the `install.sh` script located under the project root to verify the
+**Language Requirements:**  
+Python-3.8.1
+
+**Setup:**  
+(1) Run the command `sh install.sh` from the project root to verify the
 current edition of Python, create a new virtual environment, and install all
 required packages in that virtual environment.
 
@@ -27,8 +30,7 @@ run the command `python3 -m core.clients.dbclient` from the project root.
 It deletes the tables if they exist and then rebuilds them again using the 
 `setup()` function in `dbclient.py`.
 
-
-**Description:**
+**Description:**  
 Through the web interface, a user may adjust slider widgets to set the 
 relative weights for each school indicator. (The page is loaded with the weights
 utilized in the 2018-2019 school year.) If the user does not want to include an
