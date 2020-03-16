@@ -9,5 +9,5 @@ from django import template
 register = template.Library()
 
 @register.filter
-def get_field(fields, key):
-    return fields[key].label_tag
+def base64_decode(value):
+    return value.decode('utf-8')

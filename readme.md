@@ -1,7 +1,7 @@
 ## CAPP 30122 Final Project: Chicago Public Schools SQRP Playground
 ### Ali Pelczar, Lily Grier, and Launa Greer
  
-#### A Django web application. Allows users to build a school quality rating policy (SQRP) for the Chicago Public Schools (CPS). Uses the model configuration to rate each high school in the district and then generate a bias score for the SQRP as a whole.  Data is visualized through a map, list of school records, and series of regression plots.
+#### A Django web application allowing users to build a school quality rating policy (SQRP) model for the Chicago Public Schools (CPS). Uses the model configuration to rate each high school in the district and then generate a bias score for the SQRP as a whole.  Data is visualized through a map, list of school records, and series of regression plots.
 
 ![alt text](sqrp/static/img/Configure_Model.JPG "Configure Model")
 
@@ -9,6 +9,9 @@
 
 ![alt text](sqrp/static/img/View_Bias_Score.JPG "View Bias Score")
 
+**Documentation:**  
+[Project Overview](apelczar-launagreer-lilygrier.pdf)
+[Bias Score Development](core/docs/bias_score_dev.pdf)
 
 **Language Requirements:**  
 Python-3.8.1

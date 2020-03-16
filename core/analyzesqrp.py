@@ -32,6 +32,8 @@ def calculate_sqrp_scores(policy):
         if s_obj.sqrp_rating != "Inability to Rate":
             enrollment.loc[str(s_obj.id), "sqrp_points"] = s_obj.sqrp_points
         ratings.append(s_obj.sqrp_rating)
-    bias_score.create_histogram(ratings)
-    score = bias_score.calculate_bias_score(enrollment)
-    return school_lst, score
+
+    ratings_hist = bias_score.create_histogram(ratings)
+    score, reg_plots = bias_score.calculate_bias_score(enrollment)
+
+    return school_lst, score, ratings_hist, reg_plots

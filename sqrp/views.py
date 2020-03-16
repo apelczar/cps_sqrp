@@ -39,8 +39,12 @@ def home(request):
             
         form = SQRPModelConfigForm(weights)
         policy = SQRP({i : int(weights[i]) for i in ALL_INDICATORS})
-        (schools, bias_score) = analyzesqrp.calculate_sqrp_scores(policy)
-        schools_as_dict = [vars(s) for s in schools]
+        results = analyzesqrp.calculate_sqrp_scores(policy)
+
+        schools_as_dict = [vars(s) for s in results[0]]
+        bias_score = results[1]
+        ratings_histogram = results[2]
+        reg_plots = results[3]
 
     except Exception as e:
         print('Exception occurred:', e)
@@ -50,5 +54,7 @@ def home(request):
         'form': form,
         'schools': schools_as_dict,
         'bias_score': "{:.0f}".format(bias_score),
-        'bias_score_explanation': BIAS_SCORE_EXPLANATION
+        'bias_score_explanation': BIAS_SCORE_EXPLANATION,
+        'ratings_histogram': ratings_histogram,
+        'reg_plots': reg_plots
     })
