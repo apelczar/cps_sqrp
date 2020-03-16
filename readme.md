@@ -16,9 +16,9 @@
 **Language Requirements:**  
 Python-3.8.1
 
-**Required Libraries:**
-*Installed with apt-get command if using VM* 
-libsqlite3-dev
+**Required Libraries:**  
+*Installed with apt-get command if using VM*  
+libsqlite3-dev  
 
 *Installed via script using requirements.txt*  
 asgiref==3.2.3  
